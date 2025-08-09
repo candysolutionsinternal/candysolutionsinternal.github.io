@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Services - Candy Solutions</title>
+    <link rel="icon" type="image/png" href="imgs/candysolutions-fav-ico.png">
     <!-- TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome CDN -->
@@ -56,7 +57,10 @@
     <!-- Navigation Bar -->
     <nav class="bg-gray-800 p-4 shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="index.html" class="text-2xl font-bold text-white">Candy Solutions</a>
+            <a href="index.html" class="flex items-center space-x-2">
+                <img src="imgs/candy-solutions-logo.avif" alt="Candy Solutions Logo" class="h-10 w-16 object-contain rounded">
+                <span class="text-2xl font-bold text-white">Candy Solutions</span>
+            </a>
             <!-- Hamburger Button (Mobile) -->
             <button id="menu-toggle" class="md:hidden text-gray-300 hover:text-white focus:outline-none text-2xl" aria-label="Toggle menu">
                 <i class="fas fa-bars"></i>
@@ -75,7 +79,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <header class="relative h-96 flex items-center justify-center text-center bg-cover bg-center" style="background-image: url('imgs/servicespage.png');">
+    <header class="relative h-96 flex items-center justify-center text-center bg-cover bg-center" style="background-image: url('imgs/techs.jpg');">
         <div class="absolute inset-0 bg-black opacity-70"></div>
         <div class="relative z-10 p-8 max-w-4xl mx-auto">
             <h1 class="text-6xl md:text-8xl font-extrabold text-white mb-4 leading-tight">
@@ -99,39 +103,51 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10">
                 <!-- AI-Powered Sales -->
-                <div class="bg-gray-800 p-8 rounded-lg shadow-xl transform transition duration-500 hover:scale-105 hover:shadow-2xl">
-                    <div class="text-6xl font-extrabold text-gradient-purple-blue mb-4">01</div>
-                    <h3 class="text-3xl font-bold text-white mb-4">AI-Powered Sales</h3>
-                    <p class="text-gray-300 text-lg">
-                        Revolutionise your sales process with our advanced AI solutions. We provide predictive analytics to identify high-potential leads, optimise pricing strategies, and personalise customer interactions. Our AI models can forecast sales trends, automate lead scoring, and provide real-time insights, empowering your sales team to close deals faster and more efficiently. From intelligent CRM integrations to AI-driven sales coaching, we help you maximise revenue and achieve unprecedented sales growth.
-                    </p>
+                <div class="relative bg-gray-800 p-8 rounded-lg shadow-xl transform transition duration-500 hover:scale-105 hover:shadow-2xl bg-cover bg-center" style="background-image: url('imgs/investment.avif');">
+                    <div class="absolute inset-0 bg-black opacity-60 rounded-lg"></div>
+                    <div class="relative z-10">
+                        <div class="text-6xl font-extrabold text-gradient-purple-blue mb-4">01</div>
+                        <h3 class="text-3xl font-bold text-white mb-4">AI-Powered Sales</h3>
+                        <p class="text-gray-300 text-lg">
+                            Revolutionise your sales process with our advanced AI solutions. We provide predictive analytics to identify high-potential leads, optimise pricing strategies, and personalise customer interactions. Our AI models can forecast sales trends, automate lead scoring, and provide real-time insights, empowering your sales team to close deals faster and more efficiently. From intelligent CRM integrations to AI-driven sales coaching, we help you maximise revenue and achieve unprecedented sales growth.
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Customer Support Automation -->
-                <div class="bg-gray-800 p-8 rounded-lg shadow-xl transform transition duration-500 hover:scale-105 hover:shadow-2xl">
-                    <div class="text-6xl font-extrabold text-gradient-pink-orange mb-4">02</div>
-                    <h3 class="text-3xl font-bold text-white mb-4">Customer Support Automation</h3>
-                    <p class="text-gray-300 text-lg">
-                        Enhance customer satisfaction and reduce operational costs with our AI-powered customer support automation. Implement intelligent chatbots and virtual assistants that can handle routine inquiries, provide instant support, and escalate complex issues to human agents seamlessly. Our solutions include natural language processing (NLP) for sentiment analysis, allowing you to understand customer emotions and tailor responses accordingly. Improve response times, offer 24/7 support, and free up your human agents to focus on more critical tasks.
-                    </p>
+                <div class="relative bg-gray-800 p-8 rounded-lg shadow-xl transform transition duration-500 hover:scale-105 hover:shadow-2xl bg-cover bg-center" style="background-image: url('imgs/tech-support.jpeg');">
+                    <div class="absolute inset-0 bg-black opacity-60 rounded-lg"></div>
+                    <div class="relative z-10">
+                        <div class="text-6xl font-extrabold text-gradient-pink-orange mb-4">02</div>
+                        <h3 class="text-3xl font-bold text-white mb-4">Customer Support Automation</h3>
+                        <p class="text-gray-300 text-lg">
+                            Enhance customer satisfaction and reduce operational costs with our AI-powered customer support automation. Implement intelligent chatbots and virtual assistants that can handle routine inquiries, provide instant support, and escalate complex issues to human agents seamlessly. Our solutions include natural language processing (NLP) for sentiment analysis, allowing you to understand customer emotions and tailor responses accordingly. Improve response times, offer 24/7 support, and free up your human agents to focus on more critical tasks.
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Marketing Innovation -->
-                <div class="bg-gray-800 p-8 rounded-lg shadow-xl transform transition duration-500 hover:scale-105 hover:shadow-2xl">
-                    <div class="text-6xl font-extrabold text-gradient-green-teal mb-4">03</div>
-                    <h3 class="text-3xl font-bold text-white mb-4">Marketing Innovation</h3>
-                    <p class="text-gray-300 text-lg">
-                        Drive impactful marketing campaigns with AI-driven insights and automation. Our services include audience segmentation, predictive targeting, content optimisation, and automated campaign management. Leverage AI to analyse vast amounts of consumer data, identify emerging trends, and create highly personalised marketing messages that resonate with your target audience. From programmatic advertising to social media sentiment analysis, we help you achieve higher ROI on your marketing spend and build stronger brand loyalty.
-                    </p>
+                <div class="relative bg-gray-800 p-8 rounded-lg shadow-xl transform transition duration-500 hover:scale-105 hover:shadow-2xl bg-cover bg-center" style="background-image: url('imgs/calculating.jpg');">
+                    <div class="absolute inset-0 bg-black opacity-60 rounded-lg"></div>
+                    <div class="relative z-10">
+                        <div class="text-6xl font-extrabold text-gradient-green-teal mb-4">03</div>
+                        <h3 class="text-3xl font-bold text-white mb-4">Marketing Innovation</h3>
+                        <p class="text-gray-300 text-lg">
+                            Drive impactful marketing campaigns with AI-driven insights and automation. Our services include audience segmentation, predictive targeting, content optimisation, and automated campaign management. Leverage AI to analyse vast amounts of consumer data, identify emerging trends, and create highly personalised marketing messages that resonate with your target audience. From programmatic advertising to social media sentiment analysis, we help you achieve higher ROI on your marketing spend and build stronger brand loyalty.
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Consulting Excellence -->
-                <div class="bg-gray-800 p-8 rounded-lg shadow-xl transform transition duration-500 hover:scale-105 hover:shadow-2xl">
-                    <div class="text-6xl font-extrabold text-gradient-purple-blue mb-4">04</div>
-                    <h3 class="text-3xl font-bold text-white mb-4">Consulting Excellence</h3>
-                    <p class="text-gray-300 text-lg">
-                        Navigate the complexities of AI adoption with our expert consulting services. Our seasoned AI strategists work closely with your team to develop a tailored AI roadmap, identify key opportunities, and ensure seamless integration of AI solutions into your existing infrastructure. We provide end-to-end guidance, from feasibility studies and pilot programs to full-scale deployment and change management. Our goal is to empower your organisation with the knowledge and tools to leverage AI effectively and achieve sustainable competitive advantage.
-                    </p>
+                <div class="relative bg-gray-800 p-8 rounded-lg shadow-xl transform transition duration-500 hover:scale-105 hover:shadow-2xl bg-cover bg-center" style="background-image: url('imgs/consulting.jpeg');">
+                    <div class="absolute inset-0 bg-black opacity-60 rounded-lg"></div>
+                    <div class="relative z-10">
+                        <div class="text-6xl font-extrabold text-gradient-purple-blue mb-4">04</div>
+                        <h3 class="text-3xl font-bold text-white mb-4">Consulting Excellence</h3>
+                        <p class="text-gray-300 text-lg">
+                            Navigate the complexities of AI adoption with our expert consulting services. Our seasoned AI strategists work closely with your team to develop a tailored AI roadmap, identify key opportunities, and ensure seamless integration of AI solutions into your existing infrastructure. We provide end-to-end guidance, from feasibility studies and pilot programs to full-scale deployment and change management. Our goal is to empower your organisation with the knowledge and tools to leverage AI effectively and achieve sustainable competitive advantage.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -175,7 +191,7 @@
                     <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook text-2xl"></i></a>
                 </div>
             </div>
-            <p class="text-sm">Created by @TonyKing</p>
+            <p class="text-sm">Created by @CandySolutuions</p>
         </div>
     </footer>
 

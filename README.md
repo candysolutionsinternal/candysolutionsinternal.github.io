@@ -14,7 +14,7 @@ This project aims to rebuild the [Candy Solutions website](https://candysolution
     *   Interactive animations triggered by scrolling, similar to Apple's website, using Framer Motion.
 5.  **Technology Stack**: Utilize HTML5, TailwindCSS 3.0+, Framer Motion, and professional icon libraries.
 6.  **Data Visualization**: Integrate online chart components with consistent styling if data display is required.
-7.  **Creator Information**: Include `@TonyKing` in the footer of all rebuilt HTML pages.
+7.  **Creator Information**: Include `@CandySolutuions` in the footer of all rebuilt HTML pages.
 
 ## Current Progress:
 
