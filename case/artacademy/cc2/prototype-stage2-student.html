@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美术成长管理 - 学生端 (第二期)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for radar and line charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- html2canvas for share image generation -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        /* Custom animations and styles */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in { animation: slideIn 0.3s ease-out; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse-animation { animation: pulse 2s ease-in-out infinite; }
+
+        /* Progress bar animation */
+        .progress-bar {
+            transition: width 1s ease-out;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        /* Badge styles */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Modal backdrop */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Share preview styles */
+        .share-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Notification dot */
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header with Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
+                    小
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800">小明的画室</h1>
+                    <p class="text-xs text-gray-500">素描基础班 · 第8周</p>
+                </div>
+            </div>
+            <button id="notificationBtn" class="relative p-2 hover:bg-gray-100 rounded-full transition">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+                <div id="notificationDot" class="notification-dot"></div>
+            </button>
+        </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-16 z-40">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex space-x-8">
+                <button class="tab-btn py-4 px-2 border-b-2 border-blue-500 text-blue-600 font-medium text-sm" data-tab="goals">
+                    目标与进度
+                </button>
+                <button class="tab-btn py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="report">
+                    成长报告
+                </button>
+                <button class="tab-btn py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="history">
+                    作品历史
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl mx-auto px-4 py-6">
+
+        <!-- Tab 1: Goals and Milestones -->
+        <div id="goalsTab" class="tab-content">
+            <!-- Current Goal Card -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 slide-in">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">当前目标</h2>
+                        <p class="text-sm text-gray-500 mt-1">第8周 / 共12周</p>
+                    </div>
+                    <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">编辑目标</button>
+                </div>
+
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">掌握素描基础技法</h3>
+                    <p class="text-sm text-gray-600">通过12周的学习，能够独立完成静物素描，掌握明暗关系和透视原理</p>
+                </div>
+
+                <!-- Overall Progress -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700">总体进度</span>
+                        <span class="text-sm font-semibold text-blue-600">67%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="progress-bar bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full" style="width: 67%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">已完成 8/12 周课程</p>
+                </div>
+
+                <!-- Milestone Progress -->
+                <div class="space-y-4">
+                    <h3 class="font-semibold text-gray-800 mb-3">阶段里程碑</h3>
+
+                    <!-- Milestone 1 - Completed -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-medium text-gray-800">基础线条练习</h4>
+                                <span class="badge bg-green-100 text-green-700">已完成</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">完成100组线条练习，掌握稳定性</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Milestone 2 - In Progress -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center pulse-animation">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-medium text-gray-800">明暗关系训练</h4>
+                                <span class="badge bg-blue-100 text-blue-700">进行中</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">理解五大调子，完成8张练习作品</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="progress-bar bg-blue-500 h-2 rounded-full" style="width: 62%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">已完成 5/8 张</p>
+                        </div>
+                    </div>
+
+                    <!-- Milestone 3 - Locked -->
+                    <div class="flex items-start space-x-3 opacity-50">
+                        <div class="flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-medium text-gray-800">完整静物素描</h4>
+                                <span class="badge bg-gray-200 text-gray-600">未开始</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">独立完成3幅完整的静物素描作品</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="bg-gray-400 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Next Action -->
+                <div class="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                    <div class="flex">
+                        <svg class="w-5 h-5 text-yellow-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
+                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
+                        </svg>
+                        <div>
+                            <h4 class="text-sm font-semibold text-yellow-800">下一步建议</h4>
+                            <p class="text-sm text-yellow-700 mt-1">本周继续练习明暗关系，完成剩余3张球体练习，重点观察光源方向</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Activity Card -->
+            <div class="bg-white rounded-lg shadow-md p-6 slide-in">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">本周活动</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <div class="text-3xl font-bold text-blue-600">3</div>
+                        <div class="text-sm text-gray-600 mt-1">已提交作品</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <div class="text-3xl font-bold text-green-600">5</div>
+                        <div class="text-sm text-gray-600 mt-1">获得反馈</div>
+                    </div>
+                    <div class="text-center p-4 bg-purple-50 rounded-lg">
+                        <div class="text-3xl font-bold text-purple-600">2.5</div>
+                        <div class="text-sm text-gray-600 mt-1">学习时长(h)</div>
+                    </div>
+                    <div class="text-center p-4 bg-orange-50 rounded-lg">
+                        <div class="text-3xl font-bold text-orange-600">92</div>
+                        <div class="text-sm text-gray-600 mt-1">连续天数</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Growth Report -->
+        <div id="reportTab" class="tab-content hidden">
+            <!-- Report Header with Share Button -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 slide-in">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">8周成长报告</h2>
+                        <p class="text-sm text-gray-500 mt-1">2025年11月 - 2026年1月</p>
+                    </div>
+                    <button id="shareReportBtn" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-purple-600 transition font-medium text-sm flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                        </svg>
+                        分享报告
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ability Radar Chart -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 slide-in">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">能力雷达图</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center">
+                    <div class="w-full md:w-1/2 h-80">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                    <div class="w-full md:w-1/2 mt-6 md:mt-0 md:pl-8">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700">线条控制</span>
+                                <span class="font-semibold text-blue-600">85分</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700">明暗关系</span>
+                                <span class="font-semibold text-blue-600">72分</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700">透视准确性</span>
+                                <span class="font-semibold text-blue-600">68分</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700">构图完整性</span>
+                                <span class="font-semibold text-blue-600">78分</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700">细节刻画</span>
+                                <span class="font-semibold text-blue-600">65分</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 bg-green-50 rounded-lg">
+                            <h4 class="text-sm font-semibold text-green-800 mb-2">最强优势</h4>
+                            <p class="text-sm text-green-700">线条控制能力突出，比同期学员高18%</p>
+                        </div>
+                        <div class="mt-3 p-4 bg-blue-50 rounded-lg">
+                            <h4 class="text-sm font-semibold text-blue-800 mb-2">成长空间</h4>
+                            <p class="text-sm text-blue-700">细节刻画还需加强，建议多练习局部描绘</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trend Curve -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 slide-in">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">能力趋势曲线</h3>
+                <div class="h-64">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div class="mt-4 flex items-center justify-center space-x-6 text-sm">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                        <span class="text-gray-600">综合评分</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
+                        <span class="text-gray-600">班级平均</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Artwork Comparison -->
+            <div class="bg-white rounded-lg shadow-md p-6 slide-in">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">作品对比</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- First Artwork -->
+                    <div class="border-2 border-gray-200 rounded-lg overflow-hidden">
+                        <div class="bg-gradient-to-br from-gray-200 to-gray-300 h-64 flex items-center justify-center">
+                            <div class="text-center">
+                                <svg class="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <p class="text-gray-500 text-sm mt-2">第1周作品</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white">
+                            <h4 class="font-semibold text-gray-800 mb-2">球体练习 #1</h4>
+                            <p class="text-sm text-gray-600 mb-3">2025年11月5日</p>
+                            <div class="flex items-center space-x-2">
+                                <span class="badge bg-yellow-100 text-yellow-700">综合得分: 58</span>
+                            </div>
+                            <div class="mt-3 text-xs text-gray-500">
+                                <p>✓ 形体基本准确</p>
+                                <p>✗ 明暗过渡生硬</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Latest Artwork -->
+                    <div class="border-2 border-blue-500 rounded-lg overflow-hidden">
+                        <div class="bg-gradient-to-br from-blue-100 to-purple-100 h-64 flex items-center justify-center">
+                            <div class="text-center">
+                                <svg class="w-16 h-16 mx-auto text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <p class="text-blue-600 text-sm mt-2">第8周作品</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white">
+                            <h4 class="font-semibold text-gray-800 mb-2">球体练习 #15</h4>
+                            <p class="text-sm text-gray-600 mb-3">2026年1月23日</p>
+                            <div class="flex items-center space-x-2">
+                                <span class="badge bg-green-100 text-green-700">综合得分: 85</span>
+                                <span class="badge bg-blue-100 text-blue-700">提升 +27分</span>
+                            </div>
+                            <div class="mt-3 text-xs text-green-600">
+                                <p>✓ 明暗过渡自然</p>
+                                <p>✓ 高光精准</p>
+                                <p>✓ 投影真实</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Summary -->
+                <div class="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg">
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">进步总结</h4>
+                            <p class="text-sm text-gray-700 mt-1">
+                                8周内综合评分提升了<span class="font-bold text-green-600"> 46.5% </span>，
+                                明暗关系能力进步最显著（+38分），已经达到中级水平！
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Artwork History -->
+        <div id="historyTab" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md p-6 slide-in">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">作品历史</h2>
+
+                <!-- Filter -->
+                <div class="flex items-center space-x-4 mb-6">
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option>全部时间</option>
+                        <option>本周</option>
+                        <option>本月</option>
+                        <option>近3个月</option>
+                    </select>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option>全部类型</option>
+                        <option>线条练习</option>
+                        <option>明暗练习</option>
+                        <option>静物素描</option>
+                    </select>
+                </div>
+
+                <!-- Timeline -->
+                <div class="space-y-6">
+                    <!-- Week 8 -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-500 mb-3">第8周 (本周)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer">
+                                <div class="bg-gradient-to-br from-gray-100 to-gray-200 h-40 flex items-center justify-center">
+                                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="p-3">
+                                    <h4 class="font-medium text-gray-800 text-sm">圆柱体明暗练习</h4>
+                                    <p class="text-xs text-gray-500 mt-1">1月23日 · 已反馈</p>
+                                    <div class="mt-2">
+                                        <span class="badge bg-green-100 text-green-700 text-xs">得分: 82</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer">
+                                <div class="bg-gradient-to-br from-gray-100 to-gray-200 h-40 flex items-center justify-center">
+                                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="p-3">
+                                    <h4 class="font-medium text-gray-800 text-sm">方块投影练习</h4>
+                                    <p class="text-xs text-gray-500 mt-1">1月21日 · 已反馈</p>
+                                    <div class="mt-2">
+                                        <span class="badge bg-green-100 text-green-700 text-xs">得分: 78</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week 7 -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-500 mb-3">第7周</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer opacity-75">
+                                <div class="bg-gradient-to-br from-gray-100 to-gray-200 h-40 flex items-center justify-center">
+                                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="p-3">
+                                    <h4 class="font-medium text-gray-800 text-sm">球体光影练习</h4>
+                                    <p class="text-xs text-gray-500 mt-1">1月18日 · 已反馈</p>
+                                    <div class="mt-2">
+                                        <span class="badge bg-green-100 text-green-700 text-xs">得分: 75</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Notification Modal -->
+    <div id="notificationModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0" id="notificationBackdrop"></div>
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full relative z-10 slide-in max-h-[80vh] overflow-hidden flex flex-col">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-gray-800">通知中心</h3>
+                        <button id="closeNotificationModal" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6 overflow-y-auto flex-1">
+                    <div class="space-y-4">
+                        <!-- Notification 1 - New -->
+                        <div class="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-gray-800 text-sm">作品已获得反馈</h4>
+                                <p class="text-sm text-gray-600 mt-1">你的"圆柱体明暗练习"已经得到老师反馈，快去查看吧！</p>
+                                <p class="text-xs text-gray-500 mt-2">2分钟前</p>
+                            </div>
+                        </div>
+
+                        <!-- Notification 2 -->
+                        <div class="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
+                            <div class="flex-shrink-0 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800 text-sm">里程碑达成！</h4>
+                                <p class="text-sm text-gray-600 mt-1">恭喜完成"明暗关系训练"第5张练习，继续加油！</p>
+                                <p class="text-xs text-gray-500 mt-2">1小时前</p>
+                            </div>
+                        </div>
+
+                        <!-- Notification 3 -->
+                        <div class="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800 text-sm">课程提醒</h4>
+                                <p class="text-sm text-gray-600 mt-1">明天下午3:00有静物写生课，记得准备画板和铅笔</p>
+                                <p class="text-xs text-gray-500 mt-2">5小时前</p>
+                            </div>
+                        </div>
+
+                        <!-- Notification 4 -->
+                        <div class="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg opacity-75">
+                            <div class="flex-shrink-0 w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800 text-sm">成长报告已生成</h4>
+                                <p class="text-sm text-gray-600 mt-1">你的8周成长报告已生成，快去查看你的进步吧！</p>
+                                <p class="text-xs text-gray-500 mt-2">昨天</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-gray-200 bg-gray-50">
+                    <button class="w-full text-center text-sm text-blue-600 hover:text-blue-700 font-medium">
+                        标记全部已读
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Report Modal -->
+    <div id="shareModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0" id="shareBackdrop"></div>
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full relative z-10 slide-in">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">分享成长报告</h3>
+                        <button id="closeShareModal" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Share Preview -->
+                    <div id="sharePreview" class="share-preview rounded-lg p-6 text-white mb-4">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-white rounded-full mx-auto mb-3 flex items-center justify-center">
+                                <span class="text-3xl font-bold text-purple-600">小明</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">8周成长报告</h3>
+                            <p class="text-sm opacity-90 mb-4">素描基础班 · 2025.11 - 2026.01</p>
+
+                            <div class="grid grid-cols-2 gap-3 mb-4">
+                                <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                                    <div class="text-2xl font-bold">85</div>
+                                    <div class="text-xs opacity-90">最高评分</div>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                                    <div class="text-2xl font-bold">+46%</div>
+                                    <div class="text-xs opacity-90">综合提升</div>
+                                </div>
+                            </div>
+
+                            <div class="text-xs opacity-75 border-t border-white border-opacity-30 pt-3">
+                                美术成长管理APP · 让进步看得见
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Share Options -->
+                    <div class="space-y-3">
+                        <button id="downloadImageBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            保存为图片
+                        </button>
+                        <button class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                            </svg>
+                            分享到微信
+                        </button>
+                        <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium transition flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                            </svg>
+                            更多分享方式
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.dataset.tab;
+
+                // Update button states
+                tabBtns.forEach(b => {
+                    b.classList.remove('border-blue-500', 'text-blue-600');
+                    b.classList.add('border-transparent', 'text-gray-500');
+                });
+                btn.classList.remove('border-transparent', 'text-gray-500');
+                btn.classList.add('border-blue-500', 'text-blue-600');
+
+                // Show target content
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(targetTab + 'Tab').classList.remove('hidden');
+            });
+        });
+
+        // Notification Modal
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationModal = document.getElementById('notificationModal');
+        const closeNotificationModal = document.getElementById('closeNotificationModal');
+        const notificationBackdrop = document.getElementById('notificationBackdrop');
+        const notificationDot = document.getElementById('notificationDot');
+
+        function openNotificationModal() {
+            notificationModal.classList.remove('hidden');
+            notificationDot.style.display = 'none'; // Hide dot when opened
+        }
+
+        function closeNotificationModalFunc() {
+            notificationModal.classList.add('hidden');
+        }
+
+        notificationBtn.addEventListener('click', openNotificationModal);
+        closeNotificationModal.addEventListener('click', closeNotificationModalFunc);
+        notificationBackdrop.addEventListener('click', closeNotificationModalFunc);
+
+        // Share Modal
+        const shareReportBtn = document.getElementById('shareReportBtn');
+        const shareModal = document.getElementById('shareModal');
+        const closeShareModal = document.getElementById('closeShareModal');
+        const shareBackdrop = document.getElementById('shareBackdrop');
+        const downloadImageBtn = document.getElementById('downloadImageBtn');
+
+        function openShareModal() {
+            shareModal.classList.remove('hidden');
+        }
+
+        function closeShareModalFunc() {
+            shareModal.classList.add('hidden');
+        }
+
+        shareReportBtn.addEventListener('click', openShareModal);
+        closeShareModal.addEventListener('click', closeShareModalFunc);
+        shareBackdrop.addEventListener('click', closeShareModalFunc);
+
+        // Download share image
+        downloadImageBtn.addEventListener('click', () => {
+            const element = document.getElementById('sharePreview');
+            html2canvas(element, {
+                scale: 2,
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = '成长报告-小明-8周.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        });
+
+        // Initialize Charts
+        window.addEventListener('load', () => {
+            // Radar Chart
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['线条控制', '明暗关系', '透视准确性', '构图完整性', '细节刻画'],
+                    datasets: [{
+                        label: '当前能力',
+                        data: [85, 72, 68, 78, 65],
+                        fill: true,
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: 'rgb(59, 130, 246)',
+                        pointBackgroundColor: 'rgb(59, 130, 246)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(59, 130, 246)'
+                    }, {
+                        label: '初始水平',
+                        data: [45, 38, 42, 50, 35],
+                        fill: true,
+                        backgroundColor: 'rgba(156, 163, 175, 0.1)',
+                        borderColor: 'rgb(156, 163, 175)',
+                        pointBackgroundColor: 'rgb(156, 163, 175)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(156, 163, 175)',
+                        borderDash: [5, 5]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Trend Chart
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['第1周', '第2周', '第3周', '第4周', '第5周', '第6周', '第7周', '第8周'],
+                    datasets: [{
+                        label: '综合评分',
+                        data: [52, 58, 61, 65, 68, 71, 74, 76],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: '班级平均',
+                        data: [50, 53, 56, 58, 60, 62, 64, 66],
+                        borderColor: 'rgb(168, 85, 247)',
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderDash: [5, 5]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        });
+
+        // Add smooth scroll animation for tab changes
+        document.addEventListener('DOMContentLoaded', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

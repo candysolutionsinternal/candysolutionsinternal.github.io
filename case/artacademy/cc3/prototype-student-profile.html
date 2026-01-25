@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学员档案 - 艺术成长管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom animations */
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Tab styles */
+        .tab-button {
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button.active {
+            color: #3B82F6;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #3B82F6;
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Progress ring */
+        @keyframes progressRing {
+            from { stroke-dashoffset: 339; }
+        }
+
+        .progress-ring {
+            animation: progressRing 1s ease-out forwards;
+        }
+
+        /* Radar chart */
+        .radar-chart {
+            transition: all 0.3s ease;
+        }
+
+        /* Export button animation */
+        @keyframes download {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(3px); }
+        }
+
+        .downloading {
+            animation: download 0.5s ease-in-out;
+        }
+
+        /* Timeline */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 40px;
+            bottom: -20px;
+            width: 2px;
+            background: #E5E7EB;
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <button onclick="goBack()" class="text-gray-600 hover:text-gray-900">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h1 class="text-lg font-semibold text-gray-900">学员档案</h1>
+                <button onclick="showExportMenu()" class="text-blue-600 hover:text-blue-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Student Info Card -->
+    <div class="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="flex items-start gap-4">
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-3xl font-bold text-blue-600">小</span>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <h2 class="text-2xl font-bold">王小明</h2>
+                        <span class="px-2 py-0.5 bg-white bg-opacity-20 rounded-full text-xs">8岁</span>
+                    </div>
+                    <p class="text-blue-100 mb-3">学号: SID20260125001</p>
+                    <div class="flex gap-4 text-sm">
+                        <div>
+                            <p class="text-blue-100">在读课程</p>
+                            <p class="text-xl font-bold">3</p>
+                        </div>
+                        <div>
+                            <p class="text-blue-100">学习天数</p>
+                            <p class="text-xl font-bold">128</p>
+                        </div>
+                        <div>
+                            <p class="text-blue-100">提交作品</p>
+                            <p class="text-xl font-bold">45</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bg-white border-b sticky top-16 z-40">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex gap-6 overflow-x-auto">
+                <button class="tab-button active py-4 px-2 font-medium text-gray-600 whitespace-nowrap" onclick="switchTab('overview')">
+                    学习概览
+                </button>
+                <button class="tab-button py-4 px-2 font-medium text-gray-600 whitespace-nowrap" onclick="switchTab('courses')">
+                    课程记录
+                </button>
+                <button class="tab-button py-4 px-2 font-medium text-gray-600 whitespace-nowrap" onclick="switchTab('progress')">
+                    成长轨迹
+                </button>
+                <button class="tab-button py-4 px-2 font-medium text-gray-600 whitespace-nowrap" onclick="switchTab('achievements')">
+                    荣誉成就
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Overview Tab -->
+        <div id="overviewTab" class="fade-in">
+            <!-- Learning Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <!-- Overall Progress -->
+                <div class="bg-white rounded-2xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">整体进度</h3>
+                    <div class="flex items-center justify-center mb-4">
+                        <svg class="transform -rotate-90" width="180" height="180">
+                            <circle cx="90" cy="90" r="54" stroke="#E5E7EB" stroke-width="12" fill="none"/>
+                            <circle class="progress-ring" cx="90" cy="90" r="54" stroke="#3B82F6" stroke-width="12" fill="none"
+                                stroke-dasharray="339" stroke-dashoffset="135" stroke-linecap="round"/>
+                        </svg>
+                        <div class="absolute text-center">
+                            <div class="text-4xl font-bold text-blue-600">75%</div>
+                            <div class="text-sm text-gray-500">总体完成度</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">已完成课时</span>
+                            <span class="font-semibold">24/32</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">作品通过率</span>
+                            <span class="font-semibold text-green-600">92%</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">出勤率</span>
+                            <span class="font-semibold text-blue-600">98%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ability Radar -->
+                <div class="bg-white rounded-2xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">能力雷达图</h3>
+                    <div class="relative flex items-center justify-center h-64">
+                        <svg width="240" height="240" viewBox="0 0 240 240" class="absolute">
+                            <!-- Grid -->
+                            <polygon points="120,40 180,70 180,170 120,200 60,170 60,70" fill="none" stroke="#E5E7EB" stroke-width="1"/>
+                            <polygon points="120,60 160,80 160,160 120,180 80,160 80,80" fill="none" stroke="#E5E7EB" stroke-width="1"/>
+                            <polygon points="120,80 140,90 140,150 120,160 100,150 100,90" fill="none" stroke="#E5E7EB" stroke-width="1"/>
+                            <!-- Lines from center -->
+                            <line x1="120" y1="120" x2="120" y2="40" stroke="#E5E7EB" stroke-width="1"/>
+                            <line x1="120" y1="120" x2="180" y2="70" stroke="#E5E7EB" stroke-width="1"/>
+                            <line x1="120" y1="120" x2="180" y2="170" stroke="#E5E7EB" stroke-width="1"/>
+                            <line x1="120" y1="120" x2="120" y2="200" stroke="#E5E7EB" stroke-width="1"/>
+                            <line x1="120" y1="120" x2="60" y2="170" stroke="#E5E7EB" stroke-width="1"/>
+                            <line x1="120" y1="120" x2="60" y2="70" stroke="#E5E7EB" stroke-width="1"/>
+                            <!-- Data -->
+                            <polygon points="120,55 170,75 165,165 120,185 75,165 70,75" fill="#3B82F6" fill-opacity="0.2" stroke="#3B82F6" stroke-width="2"/>
+                        </svg>
+                        <!-- Labels -->
+                        <div class="absolute top-4 left-1/2 -translate-x-1/2 text-xs font-medium text-gray-700">构图</div>
+                        <div class="absolute top-12 right-8 text-xs font-medium text-gray-700">色彩</div>
+                        <div class="absolute bottom-12 right-8 text-xs font-medium text-gray-700">技法</div>
+                        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs font-medium text-gray-700">创意</div>
+                        <div class="absolute bottom-12 left-8 text-xs font-medium text-gray-700">完成度</div>
+                        <div class="absolute top-12 left-8 text-xs font-medium text-gray-700">观察力</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Works -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">最近作品</h3>
+                    <a href="#" class="text-sm text-blue-600 hover:text-blue-700">查看全部 →</a>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="group cursor-pointer">
+                        <div class="aspect-square bg-gradient-to-br from-purple-200 to-pink-200 rounded-xl mb-2 overflow-hidden">
+                            <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm font-medium text-gray-900 group-hover:text-blue-600">静物写生</p>
+                        <p class="text-xs text-gray-500">2026-01-20</p>
+                    </div>
+                    <div class="group cursor-pointer">
+                        <div class="aspect-square bg-gradient-to-br from-blue-200 to-cyan-200 rounded-xl mb-2"></div>
+                        <p class="text-sm font-medium text-gray-900 group-hover:text-blue-600">人物速写</p>
+                        <p class="text-xs text-gray-500">2026-01-18</p>
+                    </div>
+                    <div class="group cursor-pointer">
+                        <div class="aspect-square bg-gradient-to-br from-green-200 to-teal-200 rounded-xl mb-2"></div>
+                        <p class="text-sm font-medium text-gray-900 group-hover:text-blue-600">风景素描</p>
+                        <p class="text-xs text-gray-500">2026-01-15</p>
+                    </div>
+                    <div class="group cursor-pointer">
+                        <div class="aspect-square bg-gradient-to-br from-orange-200 to-red-200 rounded-xl mb-2"></div>
+                        <p class="text-sm font-medium text-gray-900 group-hover:text-blue-600">创意组合</p>
+                        <p class="text-xs text-gray-500">2026-01-12</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Streak -->
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">学习打卡</h3>
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="flex-1">
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-3xl font-bold text-blue-600">12</span>
+                            <span class="text-gray-600">天连续学习</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">继续保持，冲击30天记录！</p>
+                    </div>
+                    <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="grid grid-cols-7 gap-2">
+                    <div class="text-center">
+                        <div class="text-xs text-gray-500 mb-1">周一</div>
+                        <div class="w-full aspect-square bg-blue-500 rounded-lg"></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs text-gray-500 mb-1">周二</div>
+                        <div class="w-full aspect-square bg-blue-500 rounded-lg"></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs text-gray-500 mb-1">周三</div>
+                        <div class="w-full aspect-square bg-blue-500 rounded-lg"></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs text-gray-500 mb-1">周四</div>
+                        <div class="w-full aspect-square bg-blue-500 rounded-lg"></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs text-gray-500 mb-1">周五</div>
+                        <div class="w-full aspect-square bg-blue-500 rounded-lg"></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs text-gray-500 mb-1">周六</div>
+                        <div class="w-full aspect-square bg-blue-200 rounded-lg"></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs text-gray-500 mb-1">周日</div>
+                        <div class="w-full aspect-square bg-gray-200 rounded-lg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Tab -->
+        <div id="coursesTab" class="hidden">
+            <div class="space-y-4">
+                <!-- Active Course -->
+                <div class="bg-white rounded-2xl shadow-sm p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">进行中</span>
+                            <h3 class="text-lg font-semibold text-gray-900 mt-2">创意素描基础班</h3>
+                            <p class="text-sm text-gray-500">2025-12-01 至 2026-03-01</p>
+                        </div>
+                        <button class="text-blue-600 text-sm hover:text-blue-700">查看详情 →</button>
+                    </div>
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-600">课程进度</span>
+                            <span class="font-semibold">18/24 课时</span>
+                        </div>
+                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <p class="text-2xl font-bold text-gray-900">18</p>
+                            <p class="text-xs text-gray-500">已上课时</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-green-600">22</p>
+                            <p class="text-xs text-gray-500">提交作品</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-orange-600">95</p>
+                            <p class="text-xs text-gray-500">平均分</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Course -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 opacity-75">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">已完成</span>
+                            <h3 class="text-lg font-semibold text-gray-900 mt-2">色彩启蒙课</h3>
+                            <p class="text-sm text-gray-500">2025-09-01 至 2025-11-30</p>
+                        </div>
+                        <button class="text-blue-600 text-sm hover:text-blue-700">查看证书 →</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <p class="text-2xl font-bold text-gray-900">12</p>
+                            <p class="text-xs text-gray-500">总课时</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-green-600">15</p>
+                            <p class="text-xs text-gray-500">提交作品</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-orange-600">92</p>
+                            <p class="text-xs text-gray-500">平均分</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Tab -->
+        <div id="progressTab" class="hidden">
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">成长时间线</h3>
+                <div class="space-y-6">
+                    <!-- Timeline Item -->
+                    <div class="timeline-item relative pl-12">
+                        <div class="absolute left-0 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-semibold text-gray-900">获得"进步之星"徽章</span>
+                                <span class="text-xs text-gray-500">2026-01-20</span>
+                            </div>
+                            <p class="text-sm text-gray-600">连续4周作品获得优秀评价</p>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item -->
+                    <div class="timeline-item relative pl-12">
+                        <div class="absolute left-0 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-semibold text-gray-900">完成第20幅作品</span>
+                                <span class="text-xs text-gray-500">2026-01-15</span>
+                            </div>
+                            <p class="text-sm text-gray-600">静物写生获得老师高度评价</p>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item -->
+                    <div class="timeline-item relative pl-12">
+                        <div class="absolute left-0 w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-semibold text-gray-900">开启素描基础班学习</span>
+                                <span class="text-xs text-gray-500">2025-12-01</span>
+                            </div>
+                            <p class="text-sm text-gray-600">开始新的学习旅程</p>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item -->
+                    <div class="timeline-item relative pl-12">
+                        <div class="absolute left-0 w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            🎉
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-semibold text-gray-900">完成色彩启蒙课</span>
+                                <span class="text-xs text-gray-500">2025-11-30</span>
+                            </div>
+                            <p class="text-sm text-gray-600">获得结业证书，平均分92分</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements Tab -->
+        <div id="achievementsTab" class="hidden">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Achievement Badge -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold text-gray-900 mb-1">进步之星</h4>
+                    <p class="text-xs text-gray-500">连续优秀</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-6 text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold text-gray-900 mb-1">学习达人</h4>
+                    <p class="text-xs text-gray-500">100天打卡</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-6 text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold text-gray-900 mb-1">完美主义</h4>
+                    <p class="text-xs text-gray-500">20个满分作品</p>
+                </div>
+
+                <!-- Locked Achievement -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 text-center opacity-50">
+                    <div class="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold text-gray-900 mb-1">大师之路</h4>
+                    <p class="text-xs text-gray-500">完成50幅作品解锁</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Export Menu Modal -->
+    <div id="exportMenu" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end sm:items-center justify-center">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md p-6 slide-in">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">导出学员档案</h3>
+            <div class="space-y-3">
+                <button onclick="exportProfile('pdf')" class="w-full flex items-center gap-3 p-4 bg-red-50 hover:bg-red-100 rounded-xl transition-colors">
+                    <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-semibold text-gray-900">导出为PDF</p>
+                        <p class="text-xs text-gray-500">完整档案，适合打印</p>
+                    </div>
+                </button>
+
+                <button onclick="exportProfile('image')" class="w-full flex items-center gap-3 p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors">
+                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-semibold text-gray-900">生成海报图</p>
+                        <p class="text-xs text-gray-500">适合分享到社交平台</p>
+                    </div>
+                </button>
+
+                <button onclick="exportProfile('excel')" class="w-full flex items-center gap-3 p-4 bg-green-50 hover:bg-green-100 rounded-xl transition-colors">
+                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-semibold text-gray-900">导出为Excel</p>
+                        <p class="text-xs text-gray-500">数据分析，批量处理</p>
+                    </div>
+                </button>
+            </div>
+            <button onclick="closeExportMenu()" class="w-full mt-4 py-3 text-gray-600 hover:text-gray-900">
+                取消
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('[id$="Tab"]').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            // Show selected tab
+            const selectedTab = document.getElementById(tabName + 'Tab');
+            if (selectedTab) {
+                selectedTab.classList.remove('hidden');
+                selectedTab.classList.add('fade-in');
+            }
+
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Export menu
+        function showExportMenu() {
+            document.getElementById('exportMenu').classList.remove('hidden');
+        }
+
+        function closeExportMenu() {
+            document.getElementById('exportMenu').classList.add('hidden');
+        }
+
+        function exportProfile(format) {
+            const button = event.currentTarget;
+            button.classList.add('downloading');
+
+            setTimeout(() => {
+                alert(`正在导出${format.toUpperCase()}格式的学员档案...\n\n此功能在实际应用中会生成包含以下内容的文件:\n- 基本信息\n- 学习统计\n- 课程记录\n- 作品集\n- 成长报告`);
+                button.classList.remove('downloading');
+                closeExportMenu();
+            }, 300);
+        }
+
+        // Navigation
+        function goBack() {
+            alert('返回到学员列表');
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('exportMenu').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeExportMenu();
+            }
+        });
+    </script>
+</body>
+</html>

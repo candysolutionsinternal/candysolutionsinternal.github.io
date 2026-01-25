@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美术成长管理APP - 第二期原型导航</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16">
+        <div class="max-w-6xl mx-auto px-4 text-center fade-in">
+            <div class="mb-6">
+                <div class="inline-block p-4 bg-white bg-opacity-20 rounded-full">
+                    <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                </div>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">美术成长管理APP</h1>
+            <p class="text-xl md:text-2xl mb-2 opacity-90">第二期功能原型</p>
+            <p class="text-lg opacity-75">让进步看得见 · 让成长可分享</p>
+            <div class="mt-6 inline-block px-4 py-2 bg-white bg-opacity-20 rounded-full text-sm">
+                版本: Stage 2 (第二期) · 2026-01-25
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Cards -->
+    <main class="max-w-6xl mx-auto px-4 py-12">
+        <div class="mb-12 fade-in">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">选择查看角色</h2>
+            <p class="text-gray-600">第二期新增功能: 目标与里程碑 · 成长报告 · 报告分享 · 推送通知 · 老师端</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Student View Card -->
+            <a href="prototype-stage2-student.html" class="card-hover bg-white rounded-xl shadow-lg overflow-hidden fade-in">
+                <div class="bg-gradient-to-br from-blue-500 to-purple-500 p-8 text-white">
+                    <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">学生端</h3>
+                    <p class="text-sm opacity-90">Student View</p>
+                </div>
+                <div class="p-8">
+                    <h4 class="font-semibold text-gray-800 mb-3">核心功能</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>目标与里程碑设定，可视化进度条</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>成长报告：能力雷达图 + 趋势曲线</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>作品对比展示，量化进步数据</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>一键生成分享海报，支持图片下载</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>通知中心，实时反馈提醒</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>作品历史时间线浏览</span>
+                        </li>
+                    </ul>
+                    <div class="mt-6 flex items-center justify-between">
+                        <span class="text-sm text-gray-500">点击查看完整原型</span>
+                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Teacher View Card -->
+            <a href="prototype-stage2-teacher.html" class="card-hover bg-white rounded-xl shadow-lg overflow-hidden fade-in" style="animation-delay: 0.1s;">
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-500 p-8 text-white">
+                    <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">老师端</h3>
+                    <p class="text-sm opacity-90">Teacher View</p>
+                </div>
+                <div class="p-8">
+                    <h4 class="font-semibold text-gray-800 mb-3">核心功能</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>学生列表管理，多维度筛选</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>学生详情查看，作品进度跟踪</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>待批改作品队列管理</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>结构化反馈批改工具</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>成长报告查看与导出</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>班级数据统计看板</span>
+                        </li>
+                    </ul>
+                    <div class="mt-6 flex items-center justify-between">
+                        <span class="text-sm text-gray-500">点击查看完整原型</span>
+                        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Feature Highlights -->
+        <div class="mt-16 fade-in" style="animation-delay: 0.2s;">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">第二期核心亮点</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center p-6 bg-white rounded-lg shadow-md">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-2">可视化进度</h3>
+                    <p class="text-sm text-gray-600">目标里程碑+进度条，学习路径一目了然</p>
+                </div>
+
+                <div class="text-center p-6 bg-white rounded-lg shadow-md">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-2">成长报告</h3>
+                    <p class="text-sm text-gray-600">雷达图+曲线+对比，全方位展示进步</p>
+                </div>
+
+                <div class="text-center p-6 bg-white rounded-lg shadow-md">
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-2">一键分享</h3>
+                    <p class="text-sm text-gray-600">生成精美海报，分享到社交平台</p>
+                </div>
+
+                <div class="text-center p-6 bg-white rounded-lg shadow-md">
+                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-2">智能通知</h3>
+                    <p class="text-sm text-gray-600">及时提醒反馈、里程碑达成</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Specs -->
+        <div class="mt-16 p-8 bg-white rounded-lg shadow-md fade-in" style="animation-delay: 0.3s;">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">技术说明</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-2">实现技术</h3>
+                    <ul class="space-y-1 text-gray-600">
+                        <li>• 纯 HTML + CSS + JavaScript (无框架)</li>
+                        <li>• Tailwind CSS (via CDN)</li>
+                        <li>• Chart.js (雷达图、趋势曲线)</li>
+                        <li>• html2canvas (分享图片生成)</li>
+                        <li>• 响应式设计，支持移动端</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-2">交互功能</h3>
+                    <ul class="space-y-1 text-gray-600">
+                        <li>• Tab 切换导航</li>
+                        <li>• 模态窗口（通知、分享、批改）</li>
+                        <li>• 动态数据可视化</li>
+                        <li>• 进度条动画</li>
+                        <li>• 下载分享海报</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-16 text-center text-gray-500 text-sm fade-in" style="animation-delay: 0.4s;">
+            <p>美术成长管理APP · 第二期原型 · 2026-01-25</p>
+            <p class="mt-2">适用于儿童美术培训机构的学员成长管理工具</p>
+        </div>
+    </main>
+</body>
+</html>

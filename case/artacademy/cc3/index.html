@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stage 3 原型导航 - 艺术成长管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .card {
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .badge {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="text-center mb-12 fade-in">
+            <div class="inline-block mb-4">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg">
+                    <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
+                    </svg>
+                </div>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-900 mb-3">艺术成长管理 APP</h1>
+            <p class="text-xl text-gray-600 mb-2">Stage 3 功能原型演示</p>
+            <p class="text-sm text-gray-500">商业闭环 - 在线支付、课程报名、完整档案、营销工具</p>
+            <span class="inline-block mt-4 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium badge">
+                第三期功能完整版
+            </span>
+        </div>
+
+        <!-- Feature Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <!-- Card 1: Enrollment & Payment -->
+            <a href="prototype-enrollment-payment.html" class="card bg-white rounded-2xl shadow-lg overflow-hidden group">
+                <div class="h-40 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <svg class="w-16 h-16 text-white transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">课程报名与支付</h3>
+                    <p class="text-sm text-gray-600 mb-4">完整的报名流程，支持微信/支付宝支付，优惠券系统</p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">在线支付</span>
+                        <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">优惠券</span>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">订单管理</span>
+                    </div>
+                    <div class="text-blue-600 font-medium text-sm group-hover:text-blue-700">
+                        查看原型 →
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 2: Student Profile -->
+            <a href="prototype-student-profile.html" class="card bg-white rounded-2xl shadow-lg overflow-hidden group">
+                <div class="h-40 bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
+                    <svg class="w-16 h-16 text-white transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">学员完整档案</h3>
+                    <p class="text-sm text-gray-600 mb-4">学习数据、成长轨迹、能力分析，支持导出PDF/Excel</p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">能力雷达图</span>
+                        <span class="px-2 py-1 bg-teal-100 text-teal-700 text-xs rounded-full">成长时间线</span>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">档案导出</span>
+                    </div>
+                    <div class="text-green-600 font-medium text-sm group-hover:text-green-700">
+                        查看原型 →
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 3: Teacher Dashboard -->
+            <a href="prototype-teacher-dashboard.html" class="card bg-white rounded-2xl shadow-lg overflow-hidden group">
+                <div class="h-40 bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+                    <svg class="w-16 h-16 text-white transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">老师工作台</h3>
+                    <p class="text-sm text-gray-600 mb-4">班级管理、学员管理、作品评审、数据看板</p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">班级管理</span>
+                        <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">数据分析</span>
+                        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">作品评审</span>
+                    </div>
+                    <div class="text-orange-600 font-medium text-sm group-hover:text-orange-700">
+                        查看原型 →
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 4: Marketing Tools -->
+            <a href="prototype-marketing-tools.html" class="card bg-white rounded-2xl shadow-lg overflow-hidden group">
+                <div class="h-40 bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                    <svg class="w-16 h-16 text-white transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">营销工具</h3>
+                    <p class="text-sm text-gray-600 mb-4">优惠券管理、拼团活动、推荐有礼系统</p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full">优惠券</span>
+                        <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">拼团</span>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">推荐返利</span>
+                    </div>
+                    <div class="text-pink-600 font-medium text-sm group-hover:text-pink-700">
+                        查看原型 →
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Features Overview -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">第三期核心功能</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Left Column -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
+                        在线支付系统
+                    </h3>
+                    <ul class="space-y-2 text-sm text-gray-600 mb-6">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            微信支付、支付宝支付集成
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            订单管理和支付状态跟踪
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            优惠券自动抵扣系统
+                        </li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-600 rounded-full"></span>
+                        学员档案系统
+                    </h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            完整学习数据统计和可视化
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            能力雷达图和成长时间线
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            多格式导出 (PDF/Excel/图片)
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-orange-600 rounded-full"></span>
+                        老师端完整版
+                    </h3>
+                    <ul class="space-y-2 text-sm text-gray-600 mb-6">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            班级管理和学员管理
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            作品评审和反馈系统
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            多维度数据分析看板
+                        </li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-pink-600 rounded-full"></span>
+                        营销工具套件
+                    </h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            优惠券创建和管理系统
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            拼团活动发起和管理
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            推荐有礼和奖励系统
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-lg p-8 text-white">
+            <h2 class="text-2xl font-bold mb-4">技术说明</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="font-semibold mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                        纯前端实现
+                    </h3>
+                    <p class="text-sm text-gray-300">HTML + Tailwind CSS + Vanilla JavaScript，无需任何框架或构建工具</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+                            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+                            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+                        </svg>
+                        完全自包含
+                    </h3>
+                    <p class="text-sm text-gray-300">每个HTML文件都是独立的，可直接在浏览器中打开</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+                        </svg>
+                        响应式设计
+                    </h3>
+                    <p class="text-sm text-gray-300">完美适配移动端、平板和桌面设备</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-12 text-gray-500 text-sm">
+            <p>艺术成长管理 APP - Stage 3 原型演示</p>
+            <p class="mt-1">版本: v0.1 | 创建日期: 2026-01-25</p>
+        </div>
+    </div>
+</body>
+</html>

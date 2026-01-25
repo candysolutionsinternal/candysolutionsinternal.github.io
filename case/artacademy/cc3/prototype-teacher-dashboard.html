@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老师工作台 - 艺术成长管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom animations */
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-down {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Sidebar */
+        .sidebar-link {
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background: #F3F4F6;
+        }
+
+        .sidebar-link.active {
+            background: #EFF6FF;
+            color: #3B82F6;
+            border-left: 3px solid #3B82F6;
+        }
+
+        /* Chart animations */
+        @keyframes growBar {
+            from { height: 0; }
+        }
+
+        .bar-chart-bar {
+            animation: growBar 0.8s ease-out forwards;
+        }
+
+        /* Student card hover */
+        .student-card {
+            transition: all 0.2s ease;
+        }
+
+        .student-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Notification badge */
+        .notification-badge {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Mobile sidebar */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Mobile Header -->
+    <header class="md:hidden bg-white border-b sticky top-0 z-40">
+        <div class="flex items-center justify-between p-4">
+            <button onclick="toggleSidebar()" class="text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+            <h1 class="text-lg font-semibold text-gray-900">老师工作台</h1>
+            <button class="relative">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+                <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full notification-badge"></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r flex flex-col">
+            <!-- Logo -->
+            <div class="h-16 flex items-center justify-between px-6 border-b">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg"></div>
+                    <span class="font-bold text-gray-900">艺术成长</span>
+                </div>
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Teacher Info -->
+            <div class="p-4 border-b">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-semibold text-lg">
+                        张
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">张老师</p>
+                        <p class="text-xs text-gray-500">素描老师 · 5年教龄</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto p-4">
+                <div class="space-y-1">
+                    <a href="#" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        工作台
+                    </a>
+                    <a href="#" onclick="showSection('classes'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        班级管理
+                    </a>
+                    <a href="#" onclick="showSection('students'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        学员管理
+                    </a>
+                    <a href="#" onclick="showSection('works'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        作品评审
+                        <span class="ml-auto px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">12</span>
+                    </a>
+                    <a href="#" onclick="showSection('analytics'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        数据分析
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Bottom Actions -->
+            <div class="p-4 border-t">
+                <button class="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    设置
+                </button>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay (Mobile) -->
+        <div id="sidebarOverlay" class="hidden md:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onclick="toggleSidebar()"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Dashboard Section -->
+            <div id="dashboardSection" class="fade-in">
+                <!-- Top Stats -->
+                <div class="bg-white border-b p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">今日概览</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-blue-700 font-medium">我的学员</span>
+                                <svg class="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                </svg>
+                            </div>
+                            <p class="text-3xl font-bold text-gray-900">48</p>
+                            <p class="text-xs text-blue-600 mt-1">3个活跃班级</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-purple-700 font-medium">待评作品</span>
+                                <svg class="w-8 h-8 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
+                                </svg>
+                            </div>
+                            <p class="text-3xl font-bold text-gray-900">12</p>
+                            <p class="text-xs text-purple-600 mt-1">需要在今日完成</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-green-700 font-medium">本周课程</span>
+                                <svg class="w-8 h-8 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/>
+                                </svg>
+                            </div>
+                            <p class="text-3xl font-bold text-gray-900">15</p>
+                            <p class="text-xs text-green-600 mt-1">还有8节未上</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-orange-700 font-medium">平均分</span>
+                                <svg class="w-8 h-8 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                            </div>
+                            <p class="text-3xl font-bold text-gray-900">88.5</p>
+                            <p class="text-xs text-orange-600 mt-1">本月作品平均分</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Grid -->
+                <div class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- Pending Reviews -->
+                        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">待评审作品</h3>
+                                <a href="#" class="text-sm text-blue-600 hover:text-blue-700">查看全部 →</a>
+                            </div>
+                            <div class="space-y-3">
+                                <!-- Work Item -->
+                                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 cursor-pointer transition-colors">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-purple-200 to-pink-200 rounded-lg flex-shrink-0"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <p class="font-semibold text-gray-900">王小明</p>
+                                            <span class="text-xs text-gray-500">素描基础班</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 truncate">静物写生 - 第8课作业</p>
+                                        <p class="text-xs text-orange-600">提交于 2小时前</p>
+                                    </div>
+                                    <button onclick="reviewWork()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+                                        评审
+                                    </button>
+                                </div>
+
+                                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 cursor-pointer transition-colors">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-blue-200 to-cyan-200 rounded-lg flex-shrink-0"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <p class="font-semibold text-gray-900">李小红</p>
+                                            <span class="text-xs text-gray-500">色彩进阶班</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 truncate">水彩风景 - 创意作品</p>
+                                        <p class="text-xs text-orange-600">提交于 3小时前</p>
+                                    </div>
+                                    <button onclick="reviewWork()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+                                        评审
+                                    </button>
+                                </div>
+
+                                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 cursor-pointer transition-colors">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-green-200 to-teal-200 rounded-lg flex-shrink-0"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <p class="font-semibold text-gray-900">张小华</p>
+                                            <span class="text-xs text-gray-500">素描基础班</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 truncate">人物速写 - 课堂练习</p>
+                                        <p class="text-xs text-orange-600">提交于 5小时前</p>
+                                    </div>
+                                    <button onclick="reviewWork()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+                                        评审
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Today's Schedule -->
+                        <div class="bg-white rounded-2xl shadow-sm p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">今日课程</h3>
+                            <div class="space-y-3">
+                                <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
+                                    <p class="text-sm font-semibold text-gray-900 mb-1">素描基础班</p>
+                                    <p class="text-xs text-gray-600 mb-2">09:00 - 11:00</p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-gray-500">16/16 学员</span>
+                                        <span class="ml-auto px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">进行中</span>
+                                    </div>
+                                </div>
+
+                                <div class="p-4 bg-gray-50 border-l-4 border-gray-300 rounded-lg">
+                                    <p class="text-sm font-semibold text-gray-900 mb-1">色彩进阶班</p>
+                                    <p class="text-xs text-gray-600 mb-2">14:00 - 16:00</p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-gray-500">12/16 学员</span>
+                                        <span class="ml-auto px-2 py-0.5 bg-gray-200 text-gray-700 text-xs rounded-full">未开始</span>
+                                    </div>
+                                </div>
+
+                                <div class="p-4 bg-gray-50 border-l-4 border-gray-300 rounded-lg">
+                                    <p class="text-sm font-semibold text-gray-900 mb-1">速写提高班</p>
+                                    <p class="text-xs text-gray-600 mb-2">19:00 - 21:00</p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-gray-500">8/12 学员</span>
+                                        <span class="ml-auto px-2 py-0.5 bg-gray-200 text-gray-700 text-xs rounded-full">未开始</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">最近动态</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">你评审了 <span class="font-semibold">王小明</span> 的作品</p>
+                                    <p class="text-xs text-gray-500">10分钟前</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                                        <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900"><span class="font-semibold">李小红</span> 提交了新作品</p>
+                                    <p class="text-xs text-gray-500">25分钟前</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">新学员 <span class="font-semibold">赵小刚</span> 加入了素描基础班</p>
+                                    <p class="text-xs text-gray-500">1小时前</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section (Hidden) -->
+            <div id="analyticsSection" class="hidden p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">数据分析</h2>
+
+                <!-- Time Range Selector -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">本周</button>
+                        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200">本月</button>
+                        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200">本学期</button>
+                        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200">自定义</button>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Submission Chart -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">作品提交趋势</h3>
+                        <div class="h-64 flex items-end justify-around gap-2 px-4">
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-500 rounded-t bar-chart-bar" style="height: 60%"></div>
+                                <span class="text-xs text-gray-500 mt-2">周一</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-500 rounded-t bar-chart-bar" style="height: 80%"></div>
+                                <span class="text-xs text-gray-500 mt-2">周二</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-500 rounded-t bar-chart-bar" style="height: 45%"></div>
+                                <span class="text-xs text-gray-500 mt-2">周三</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-500 rounded-t bar-chart-bar" style="height: 90%"></div>
+                                <span class="text-xs text-gray-500 mt-2">周四</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-500 rounded-t bar-chart-bar" style="height: 75%"></div>
+                                <span class="text-xs text-gray-500 mt-2">周五</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-300 rounded-t bar-chart-bar" style="height: 30%"></div>
+                                <span class="text-xs text-gray-500 mt-2">周六</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-300 rounded-t bar-chart-bar" style="height: 20%"></div>
+                                <span class="text-xs text-gray-500 mt-2">周日</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Distribution -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">成绩分布</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-600">优秀 (90-100分)</span>
+                                    <span class="font-semibold text-green-600">35%</span>
+                                </div>
+                                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-green-500 rounded-full" style="width: 35%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-600">良好 (80-89分)</span>
+                                    <span class="font-semibold text-blue-600">45%</span>
+                                </div>
+                                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-blue-500 rounded-full" style="width: 45%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-600">及格 (70-79分)</span>
+                                    <span class="font-semibold text-yellow-600">15%</span>
+                                </div>
+                                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-yellow-500 rounded-full" style="width: 15%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-600">待提高 (<70分)</span>
+                                    <span class="font-semibold text-red-600">5%</span>
+                                </div>
+                                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-red-500 rounded-full" style="width: 5%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Performers -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">本月之星</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-900">王小明</p>
+                                    <p class="text-xs text-gray-500">素描基础班</p>
+                                </div>
+                                <span class="text-lg font-bold text-orange-600">96</span>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-900">李小红</p>
+                                    <p class="text-xs text-gray-500">色彩进阶班</p>
+                                </div>
+                                <span class="text-lg font-bold text-orange-600">94</span>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-orange-400 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-900">张小华</p>
+                                    <p class="text-xs text-gray-500">速写提高班</p>
+                                </div>
+                                <span class="text-lg font-bold text-orange-600">92</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class Comparison -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">班级对比</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-900 font-medium">素描基础班</span>
+                                    <span class="text-blue-600 font-semibold">88.5</span>
+                                </div>
+                                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-blue-500 rounded-full" style="width: 88.5%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-900 font-medium">色彩进阶班</span>
+                                    <span class="text-purple-600 font-semibold">91.2</span>
+                                </div>
+                                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-purple-500 rounded-full" style="width: 91.2%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-900 font-medium">速写提高班</span>
+                                    <span class="text-green-600 font-semibold">85.7</span>
+                                </div>
+                                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-green-500 rounded-full" style="width: 85.7%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classes Section (Hidden) -->
+            <div id="classesSection" class="hidden p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">班级管理</h2>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+                        + 新建班级
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Class Card -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-shadow">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-1">素描基础班</h3>
+                                <p class="text-sm text-gray-500">2025秋季班</p>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">进行中</span>
+                        </div>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">学员人数</span>
+                                <span class="font-semibold">16人</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">上课时间</span>
+                                <span class="font-semibold">周六 09:00</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">课程进度</span>
+                                <span class="font-semibold">8/24 课时</span>
+                            </div>
+                        </div>
+                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                            <div class="h-full bg-blue-500 rounded-full" style="width: 33%"></div>
+                        </div>
+                        <button class="w-full py-2 text-blue-600 border border-blue-600 rounded-lg font-medium hover:bg-blue-50">
+                            查看详情
+                        </button>
+                    </div>
+
+                    <!-- Class Card 2 -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-shadow">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-1">色彩进阶班</h3>
+                                <p class="text-sm text-gray-500">2025秋季班</p>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">进行中</span>
+                        </div>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">学员人数</span>
+                                <span class="font-semibold">12人</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">上课时间</span>
+                                <span class="font-semibold">周六 14:00</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">课程进度</span>
+                                <span class="font-semibold">12/20 课时</span>
+                            </div>
+                        </div>
+                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                            <div class="h-full bg-purple-500 rounded-full" style="width: 60%"></div>
+                        </div>
+                        <button class="w-full py-2 text-blue-600 border border-blue-600 rounded-lg font-medium hover:bg-blue-50">
+                            查看详情
+                        </button>
+                    </div>
+
+                    <!-- Class Card 3 -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-shadow opacity-75">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-1">速写提高班</h3>
+                                <p class="text-sm text-gray-500">2025秋季班</p>
+                            </div>
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">已结束</span>
+                        </div>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">学员人数</span>
+                                <span class="font-semibold">8人</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">上课时间</span>
+                                <span class="font-semibold">周六 19:00</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">课程进度</span>
+                                <span class="font-semibold">16/16 课时</span>
+                            </div>
+                        </div>
+                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                            <div class="h-full bg-green-500 rounded-full" style="width: 100%"></div>
+                        </div>
+                        <button class="w-full py-2 text-blue-600 border border-blue-600 rounded-lg font-medium hover:bg-blue-50">
+                            查看详情
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Section (Hidden) -->
+            <div id="studentsSection" class="hidden p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">学员管理</h2>
+                    <div class="flex gap-2">
+                        <input type="search" placeholder="搜索学员..." class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+                            + 添加学员
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Student Card -->
+                    <div class="student-card bg-white rounded-2xl shadow-sm p-6 cursor-pointer">
+                        <div class="flex items-start gap-4 mb-4">
+                            <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                                小
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-semibold text-gray-900 mb-1">王小明</h3>
+                                <p class="text-sm text-gray-500">8岁 · 男生</p>
+                                <p class="text-xs text-gray-400 mt-1">素描基础班</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div>
+                                <p class="text-lg font-bold text-gray-900">22</p>
+                                <p class="text-xs text-gray-500">作品</p>
+                            </div>
+                            <div>
+                                <p class="text-lg font-bold text-green-600">96</p>
+                                <p class="text-xs text-gray-500">平均分</p>
+                            </div>
+                            <div>
+                                <p class="text-lg font-bold text-blue-600">98%</p>
+                                <p class="text-xs text-gray-500">出勤</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- More student cards... -->
+                    <div class="student-card bg-white rounded-2xl shadow-sm p-6 cursor-pointer">
+                        <div class="flex items-start gap-4 mb-4">
+                            <div class="w-16 h-16 bg-gradient-to-br from-pink-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                                红
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-semibold text-gray-900 mb-1">李小红</h3>
+                                <p class="text-sm text-gray-500">9岁 · 女生</p>
+                                <p class="text-xs text-gray-400 mt-1">色彩进阶班</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div>
+                                <p class="text-lg font-bold text-gray-900">18</p>
+                                <p class="text-xs text-gray-500">作品</p>
+                            </div>
+                            <div>
+                                <p class="text-lg font-bold text-green-600">94</p>
+                                <p class="text-xs text-gray-500">平均分</p>
+                            </div>
+                            <div>
+                                <p class="text-lg font-bold text-blue-600">100%</p>
+                                <p class="text-xs text-gray-500">出勤</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            sidebar.classList.toggle('open');
+
+            if (sidebar.classList.contains('open')) {
+                overlay.classList.remove('hidden');
+            } else {
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Section switching
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('[id$="Section"]').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            const section = document.getElementById(sectionName + 'Section');
+            if (section) {
+                section.classList.remove('hidden');
+                section.classList.add('fade-in');
+            }
+
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.currentTarget.parentElement.classList.add('active');
+
+            // Close mobile sidebar
+            if (window.innerWidth < 768) {
+                toggleSidebar();
+            }
+        }
+
+        // Review work action
+        function reviewWork() {
+            alert('打开作品评审界面\n\n包含功能:\n- 查看作品大图\n- 评分和评语\n- 三段式反馈(亮点/改进/建议)\n- 标注工具');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('sidebarOverlay').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

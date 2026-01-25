@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>营销工具 - 艺术成长管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom animations */
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Coupon card styles */
+        .coupon-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coupon-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="white" opacity="0.1"/></svg>');
+        }
+
+        .coupon-cut {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .coupon-cut-left {
+            left: -10px;
+        }
+
+        .coupon-cut-right {
+            right: -10px;
+        }
+
+        /* Group buy card */
+        .group-buy-card {
+            transition: all 0.3s ease;
+        }
+
+        .group-buy-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Progress timer */
+        @keyframes countdown {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        .countdown-bar {
+            animation: countdown 24h linear;
+        }
+
+        /* Avatar group */
+        .avatar-group .avatar:not(:first-child) {
+            margin-left: -12px;
+        }
+
+        /* Floating button */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-btn {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Tab indicator */
+        .tab-indicator {
+            position: absolute;
+            bottom: 0;
+            height: 3px;
+            background: #3B82F6;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <button onclick="goBack()" class="text-gray-600 hover:text-gray-900">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h1 class="text-lg font-semibold text-gray-900">营销工具</h1>
+                <button class="text-gray-600 hover:text-gray-900">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="bg-white border-b sticky top-16 z-40">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="relative flex gap-6">
+                <button class="tab-btn active py-4 px-2 font-medium text-gray-600 whitespace-nowrap relative" onclick="switchTab('coupons')">
+                    优惠券
+                </button>
+                <button class="tab-btn py-4 px-2 font-medium text-gray-600 whitespace-nowrap relative" onclick="switchTab('groupbuy')">
+                    拼团活动
+                </button>
+                <button class="tab-btn py-4 px-2 font-medium text-gray-600 whitespace-nowrap relative" onclick="switchTab('referral')">
+                    推荐有礼
+                </button>
+                <div class="tab-indicator" style="width: 60px; left: 8px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Coupons Tab -->
+        <div id="couponsTab" class="fade-in">
+            <!-- Create Coupon Button -->
+            <div class="mb-6">
+                <button onclick="showCreateCoupon()" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 shadow-lg">
+                    + 创建新优惠券
+                </button>
+            </div>
+
+            <!-- Active Coupons -->
+            <div class="mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">进行中的优惠券</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Coupon Card 1 -->
+                    <div class="coupon-card rounded-2xl p-6 text-white relative">
+                        <div class="coupon-cut coupon-cut-left"></div>
+                        <div class="coupon-cut coupon-cut-right"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <p class="text-sm opacity-90 mb-1">新用户专享</p>
+                                    <div class="flex items-baseline gap-1">
+                                        <span class="text-4xl font-bold">¥200</span>
+                                        <span class="text-sm opacity-75">立减券</span>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-white bg-opacity-20 rounded-full text-xs">限时</span>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <p class="text-sm opacity-90">满1000减200</p>
+                                <p class="text-xs opacity-75">适用于所有创意素描课程</p>
+                            </div>
+                            <div class="flex items-center justify-between pt-4 border-t border-white border-opacity-20">
+                                <div>
+                                    <p class="text-xs opacity-75">已领取 <span class="font-semibold">128/200</span></p>
+                                    <div class="h-1.5 bg-white bg-opacity-20 rounded-full w-32 mt-1">
+                                        <div class="h-full bg-white rounded-full" style="width: 64%"></div>
+                                    </div>
+                                </div>
+                                <button onclick="manageCoupon('新用户专享券')" class="text-xs underline opacity-90 hover:opacity-100">
+                                    管理
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coupon Card 2 -->
+                    <div class="bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl p-6 text-white relative">
+                        <div class="coupon-cut coupon-cut-left"></div>
+                        <div class="coupon-cut coupon-cut-right"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <p class="text-sm opacity-90 mb-1">春节特惠</p>
+                                    <div class="flex items-baseline gap-1">
+                                        <span class="text-4xl font-bold">8.8</span>
+                                        <span class="text-sm opacity-75">折</span>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-white bg-opacity-20 rounded-full text-xs">热门</span>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <p class="text-sm opacity-90">全场课程88折</p>
+                                <p class="text-xs opacity-75">有效期至2026-02-28</p>
+                            </div>
+                            <div class="flex items-center justify-between pt-4 border-t border-white border-opacity-20">
+                                <div>
+                                    <p class="text-xs opacity-75">已领取 <span class="font-semibold">456/500</span></p>
+                                    <div class="h-1.5 bg-white bg-opacity-20 rounded-full w-32 mt-1">
+                                        <div class="h-full bg-white rounded-full" style="width: 91%"></div>
+                                    </div>
+                                </div>
+                                <button onclick="manageCoupon('春节特惠')" class="text-xs underline opacity-90 hover:opacity-100">
+                                    管理
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coupon Stats -->
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">优惠券数据</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-blue-600">12</p>
+                        <p class="text-sm text-gray-500 mt-1">总发行数</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-green-600">584</p>
+                        <p class="text-sm text-gray-500 mt-1">已领取</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-orange-600">342</p>
+                        <p class="text-sm text-gray-500 mt-1">已使用</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-purple-600">58.6%</p>
+                        <p class="text-sm text-gray-500 mt-1">使用率</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Group Buy Tab -->
+        <div id="groupbuyTab" class="hidden">
+            <!-- Create Group Buy Button -->
+            <div class="mb-6">
+                <button onclick="showCreateGroupBuy()" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-teal-700 shadow-lg">
+                    + 创建拼团活动
+                </button>
+            </div>
+
+            <!-- Active Group Buy -->
+            <div class="mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">进行中的拼团</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Group Buy Card -->
+                    <div class="group-buy-card bg-white rounded-2xl shadow-sm overflow-hidden">
+                        <!-- Image -->
+                        <div class="relative h-48 bg-gradient-to-br from-purple-400 to-pink-400">
+                            <div class="absolute top-4 right-4 px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full">
+                                火热拼团中
+                            </div>
+                            <div class="absolute bottom-4 left-4 right-4">
+                                <div class="bg-black bg-opacity-50 backdrop-blur-sm rounded-lg p-3 text-white">
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-2xl font-bold">¥899</span>
+                                        <span class="text-sm line-through opacity-75">¥1280</span>
+                                        <span class="ml-auto px-2 py-0.5 bg-red-500 rounded text-xs">3人团</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">创意素描基础班 - 春季班</h3>
+                            <p class="text-sm text-gray-600 mb-4">3人成团，立省381元！邀请好友一起学画画</p>
+
+                            <!-- Progress -->
+                            <div class="mb-4">
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-600">已成团</span>
+                                    <span class="font-semibold text-green-600">28/30 组</span>
+                                </div>
+                                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full" style="width: 93%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Countdown -->
+                            <div class="mb-4 p-3 bg-orange-50 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-700">活动倒计时</span>
+                                    <div class="flex items-center gap-1 text-orange-600 font-mono font-bold">
+                                        <span class="px-2 py-1 bg-white rounded">23</span>
+                                        <span>:</span>
+                                        <span class="px-2 py-1 bg-white rounded">45</span>
+                                        <span>:</span>
+                                        <span class="px-2 py-1 bg-white rounded">12</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Groups -->
+                            <div class="mb-4">
+                                <p class="text-xs text-gray-500 mb-2">最近成团</p>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="avatar-group flex">
+                                            <div class="avatar w-6 h-6 bg-blue-400 rounded-full border-2 border-white"></div>
+                                            <div class="avatar w-6 h-6 bg-green-400 rounded-full border-2 border-white"></div>
+                                            <div class="avatar w-6 h-6 bg-purple-400 rounded-full border-2 border-white"></div>
+                                        </div>
+                                        <span class="text-gray-600">王**、李**等3人拼团成功</span>
+                                        <span class="ml-auto text-xs text-gray-400">2分钟前</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="avatar-group flex">
+                                            <div class="avatar w-6 h-6 bg-orange-400 rounded-full border-2 border-white"></div>
+                                            <div class="avatar w-6 h-6 bg-pink-400 rounded-full border-2 border-white"></div>
+                                            <div class="avatar w-6 h-6 bg-teal-400 rounded-full border-2 border-white"></div>
+                                        </div>
+                                        <span class="text-gray-600">张**、刘**等3人拼团成功</span>
+                                        <span class="ml-auto text-xs text-gray-400">8分钟前</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex gap-2">
+                                <button onclick="viewGroupBuy()" class="flex-1 py-2 border-2 border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50">
+                                    查看详情
+                                </button>
+                                <button onclick="shareGroupBuy()" class="flex-1 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+                                    分享活动
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Another Group Buy Card -->
+                    <div class="group-buy-card bg-white rounded-2xl shadow-sm overflow-hidden">
+                        <div class="relative h-48 bg-gradient-to-br from-blue-400 to-cyan-400">
+                            <div class="absolute top-4 right-4 px-3 py-1 bg-orange-500 text-white text-sm font-bold rounded-full">
+                                新活动
+                            </div>
+                            <div class="absolute bottom-4 left-4 right-4">
+                                <div class="bg-black bg-opacity-50 backdrop-blur-sm rounded-lg p-3 text-white">
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-2xl font-bold">¥699</span>
+                                        <span class="text-sm line-through opacity-75">¥980</span>
+                                        <span class="ml-auto px-2 py-0.5 bg-orange-500 rounded text-xs">2人团</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">水彩绘画体验课</h3>
+                            <p class="text-sm text-gray-600 mb-4">2人成团，好友一起学更优惠</p>
+
+                            <div class="mb-4">
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-600">已成团</span>
+                                    <span class="font-semibold text-green-600">15/20 组</span>
+                                </div>
+                                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-700">活动倒计时</span>
+                                    <div class="flex items-center gap-1 text-blue-600 font-mono font-bold">
+                                        <span class="px-2 py-1 bg-white rounded">5</span>
+                                        <span>天</span>
+                                        <span class="px-2 py-1 bg-white rounded">12</span>
+                                        <span>:</span>
+                                        <span class="px-2 py-1 bg-white rounded">30</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <p class="text-xs text-gray-500 mb-2">最近成团</p>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div class="avatar-group flex">
+                                            <div class="avatar w-6 h-6 bg-red-400 rounded-full border-2 border-white"></div>
+                                            <div class="avatar w-6 h-6 bg-yellow-400 rounded-full border-2 border-white"></div>
+                                        </div>
+                                        <span class="text-gray-600">陈**、赵**拼团成功</span>
+                                        <span class="ml-auto text-xs text-gray-400">15分钟前</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button onclick="viewGroupBuy()" class="flex-1 py-2 border-2 border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50">
+                                    查看详情
+                                </button>
+                                <button onclick="shareGroupBuy()" class="flex-1 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+                                    分享活动
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Group Buy Stats -->
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">拼团数据</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-green-600">43</p>
+                        <p class="text-sm text-gray-500 mt-1">成团数</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-blue-600">128</p>
+                        <p class="text-sm text-gray-500 mt-1">参与人数</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-orange-600">¥5.2万</p>
+                        <p class="text-sm text-gray-500 mt-1">总成交额</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-purple-600">92%</p>
+                        <p class="text-sm text-gray-500 mt-1">成团率</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Referral Tab -->
+        <div id="referralTab" class="hidden">
+            <!-- Referral Overview -->
+            <div class="bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl p-8 text-white mb-6">
+                <h2 class="text-2xl font-bold mb-2">推荐有礼计划</h2>
+                <p class="opacity-90 mb-6">邀请好友注册，双方都能获得奖励</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4">
+                        <p class="text-sm opacity-75 mb-1">累计邀请</p>
+                        <p class="text-3xl font-bold">156人</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4">
+                        <p class="text-sm opacity-75 mb-1">成功注册</p>
+                        <p class="text-3xl font-bold">98人</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4">
+                        <p class="text-sm opacity-75 mb-1">获得奖励</p>
+                        <p class="text-3xl font-bold">¥4,900</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Referral Rules -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">奖励规则</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Rule Card 1 -->
+                    <div class="border-2 border-blue-200 rounded-xl p-4 hover:border-blue-400 transition-colors">
+                        <div class="flex items-start gap-3 mb-3">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-gray-900 mb-1">好友注册</h4>
+                                <p class="text-sm text-gray-600">好友通过您的邀请链接注册</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full font-semibold">您获得 ¥20</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full font-semibold">好友获得 ¥50</span>
+                        </div>
+                    </div>
+
+                    <!-- Rule Card 2 -->
+                    <div class="border-2 border-purple-200 rounded-xl p-4 hover:border-purple-400 transition-colors">
+                        <div class="flex items-start gap-3 mb-3">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
+                                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2h-1z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-gray-900 mb-1">好友首次付费</h4>
+                                <p class="text-sm text-gray-600">好友购买任意课程</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full font-semibold">您获得 ¥50</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full font-semibold">好友获得优惠券</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Share Card -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">我的邀请</h3>
+
+                <!-- Invite Code -->
+                <div class="mb-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border-2 border-dashed border-blue-300">
+                    <p class="text-sm text-gray-600 mb-2">我的邀请码</p>
+                    <div class="flex items-center gap-2">
+                        <code class="flex-1 px-4 py-3 bg-white rounded-lg font-mono text-xl font-bold text-blue-600">ART2026XM</code>
+                        <button onclick="copyCode()" class="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+                            复制
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Share Buttons -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <button onclick="shareToWeChat()" class="flex flex-col items-center gap-2 p-4 bg-green-50 hover:bg-green-100 rounded-xl transition-colors">
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9.5 4C5.36 4 2 6.69 2 10c0 1.89 1.08 3.58 2.78 4.69-.21.76-.65 2.43-.66 2.48 0 0-.04.14.07.19.11.05.19-.01.19-.01.28-.2 2.13-1.45 2.46-1.68.45.09.93.13 1.41.13h.28c.35 2.89 3.72 5.2 7.97 5.2.48 0 .96-.04 1.41-.13.34.23 2.18 1.48 2.46 1.68 0 0 .08.06.19.01.11-.05.07-.19.07-.19-.01-.05-.45-1.72-.66-2.48 1.7-1.11 2.78-2.8 2.78-4.69 0-3.31-3.36-6-7.5-6-.19 0-.38.01-.56.03C17.76 5.77 14.09 4 9.5 4z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">微信好友</span>
+                    </button>
+
+                    <button onclick="shareToMoments()" class="flex flex-col items-center gap-2 p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                            <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">朋友圈</span>
+                    </button>
+
+                    <button onclick="shareToQQ()" class="flex flex-col items-center gap-2 p-4 bg-cyan-50 hover:bg-cyan-100 rounded-xl transition-colors">
+                        <div class="w-12 h-12 bg-cyan-500 rounded-full flex items-center justify-center">
+                            <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">QQ好友</span>
+                    </button>
+
+                    <button onclick="copyLink()" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors">
+                        <div class="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center">
+                            <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">复制链接</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Referral History -->
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">最近邀请</h3>
+                <div class="space-y-3">
+                    <!-- Referral Item -->
+                    <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                            李
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-medium text-gray-900">李**</p>
+                            <p class="text-sm text-gray-500">已注册 · 已购课</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-green-600">+¥70</p>
+                            <p class="text-xs text-gray-500">2天前</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-teal-500 rounded-full flex items-center justify-center text-white font-bold">
+                            张
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-medium text-gray-900">张**</p>
+                            <p class="text-sm text-gray-500">已注册</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-green-600">+¥20</p>
+                            <p class="text-xs text-gray-500">5天前</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                        <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold">
+                            王
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-medium text-gray-900">王**</p>
+                            <p class="text-sm text-gray-500">已注册 · 已购课</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-green-600">+¥70</p>
+                            <p class="text-xs text-gray-500">1周前</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Action Button (for mobile) -->
+    <button class="float-btn md:hidden fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-lg flex items-center justify-center z-50" onclick="showQuickActions()">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+    </button>
+
+    <script>
+        // Tab switching
+        let currentTab = 'coupons';
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+
+            // Hide all tabs
+            document.querySelectorAll('[id$="Tab"]').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+
+            // Update tab buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach((btn, index) => {
+                btn.classList.remove('active');
+                if (btn.textContent.trim() === getTabTitle(tabName)) {
+                    btn.classList.add('active');
+
+                    // Move indicator
+                    const indicator = document.querySelector('.tab-indicator');
+                    const buttonWidth = btn.offsetWidth;
+                    const buttonLeft = btn.offsetLeft;
+                    indicator.style.width = buttonWidth + 'px';
+                    indicator.style.left = buttonLeft + 'px';
+                }
+            });
+        }
+
+        function getTabTitle(tabName) {
+            const titles = {
+                'coupons': '优惠券',
+                'groupbuy': '拼团活动',
+                'referral': '推荐有礼'
+            };
+            return titles[tabName];
+        }
+
+        // Coupon actions
+        function showCreateCoupon() {
+            alert('打开创建优惠券表单\n\n包含字段:\n- 优惠券名称\n- 优惠类型(满减/折扣/无门槛)\n- 优惠金额/折扣\n- 使用门槛\n- 适用课程\n- 发放数量\n- 有效期');
+        }
+
+        function manageCoupon(name) {
+            alert(`管理优惠券: ${name}\n\n可进行操作:\n- 查看领取详情\n- 修改发放数量\n- 暂停/恢复发放\n- 设置推广位置\n- 导出使用数据`);
+        }
+
+        // Group buy actions
+        function showCreateGroupBuy() {
+            alert('打开创建拼团活动表单\n\n包含字段:\n- 活动名称\n- 选择课程\n- 拼团人数(2-5人)\n- 拼团价格\n- 活动时长\n- 成团有效期\n- 活动规则说明');
+        }
+
+        function viewGroupBuy() {
+            alert('查看拼团详情\n\n显示内容:\n- 活动数据统计\n- 所有拼团列表\n- 待成团组(可邀请)\n- 已成团组\n- 失败退款组');
+        }
+
+        function shareGroupBuy() {
+            const shareText = '🎨 艺术成长拼团活动\n\n创意素描基础班 - 春季班\n原价 ¥1280\n拼团价 ¥899\n\n3人成团，立省381元！\n邀请好友一起学画画~';
+
+            if (navigator.share) {
+                navigator.share({
+                    title: '拼团活动',
+                    text: shareText,
+                    url: window.location.href
+                });
+            } else {
+                alert('分享拼团活动\n\n' + shareText + '\n\n可分享到:\n- 微信好友/朋友圈\n- QQ/QQ空间\n- 生成海报图片');
+            }
+        }
+
+        // Referral actions
+        function copyCode() {
+            const code = 'ART2026XM';
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = event.currentTarget;
+                const originalText = btn.textContent;
+                btn.textContent = '已复制!';
+                btn.classList.add('shake');
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('shake');
+                }, 1500);
+            });
+        }
+
+        function shareToWeChat() {
+            alert('分享到微信好友\n\n将生成邀请卡片，包含:\n- 您的邀请码\n- 新用户优惠说明\n- 注册链接二维码');
+        }
+
+        function shareToMoments() {
+            alert('分享到朋友圈\n\n将生成精美海报，包含:\n- 活动介绍\n- 您的专属邀请码\n- 优惠详情\n- 二维码');
+        }
+
+        function shareToQQ() {
+            alert('分享到QQ好友\n\n将生成邀请卡片');
+        }
+
+        function copyLink() {
+            const link = 'https://art-academy.com/invite/ART2026XM';
+            navigator.clipboard.writeText(link).then(() => {
+                alert('邀请链接已复制到剪贴板！\n\n' + link);
+            });
+        }
+
+        function showQuickActions() {
+            const actions = {
+                'coupons': '创建优惠券',
+                'groupbuy': '创建拼团',
+                'referral': '分享邀请'
+            };
+
+            const action = actions[currentTab];
+            if (currentTab === 'coupons') showCreateCoupon();
+            else if (currentTab === 'groupbuy') showCreateGroupBuy();
+            else if (currentTab === 'referral') shareToWeChat();
+        }
+
+        function goBack() {
+            alert('返回首页');
+        }
+
+        // Initialize countdown timer
+        setInterval(() => {
+            // Update countdown timers here in production
+        }, 1000);
+    </script>
+</body>
+</html>
