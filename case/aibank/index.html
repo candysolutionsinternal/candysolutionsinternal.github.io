@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Banking UI Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a1a; color: #fff; min-height: 100vh; overflow-x: hidden; }
+
+        /* Glass morphism */
+        .glass { background: rgba(255,255,255,0.06); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+        .glass-light { background: rgba(255,255,255,0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        .glass-card { background: rgba(255,255,255,0.07); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; }
+
+        /* Gradients */
+        .gradient-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7); }
+        .gradient-accent { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
+        .gradient-success { background: linear-gradient(135deg, #10b981, #34d399); }
+        .gradient-warm { background: linear-gradient(135deg, #f59e0b, #f97316); }
+        .gradient-bg { background: linear-gradient(160deg, #0a0a1a 0%, #1a1040 40%, #0f1a3a 70%, #0a0a1a 100%); }
+        .text-gradient { background: linear-gradient(135deg, #8b5cf6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Glow */
+        .glow-purple { box-shadow: 0 0 40px rgba(139,92,246,0.15), 0 0 80px rgba(139,92,246,0.05); }
+        .glow-blue { box-shadow: 0 0 40px rgba(59,130,246,0.15); }
+
+        /* Orbs */
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.3; pointer-events: none; }
+        .orb-1 { width: 400px; height: 400px; background: #6366f1; top: -100px; right: -100px; }
+        .orb-2 { width: 300px; height: 300px; background: #06b6d4; bottom: -50px; left: -50px; }
+        .orb-3 { width: 250px; height: 250px; background: #8b5cf6; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+        /* Animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideOutRight { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; }
+        .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
+        .animate-slideIn { animation: slideInRight 0.4s ease-out forwards; }
+        .animate-slideOut { animation: slideOutRight 0.3s ease-out forwards; }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+
+        /* Chat */
+        .chat-container { width: 380px; min-width: 380px; height: calc(100vh - 56px); position: fixed; right: 0; top: 56px; z-index: 30; transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s; transform: translateX(100%); opacity: 0; }
+        .chat-container.open { transform: translateX(0); opacity: 1; }
+        .main-content-wrap { transition: margin-right 0.4s cubic-bezier(0.16,1,0.3,1); margin-right: 0; }
+        .main-content-wrap.chat-open { margin-right: 380px; }
+        .chat-bubble { position: fixed; bottom: 28px; right: 28px; z-index: 60; width: 60px; height: 60px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+        .chat-bubble:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(139,92,246,0.4); }
+        .chat-msg { max-width: 85%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; animation: fadeInUp 0.3s ease-out; }
+        .chat-msg.bot { background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.2); border-bottom-left-radius: 4px; align-self: flex-start; }
+        .chat-msg.user { background: rgba(6,182,212,0.2); border: 1px solid rgba(6,182,212,0.2); border-bottom-right-radius: 4px; align-self: flex-end; }
+
+        /* Login */
+        .login-card { animation: fadeInUp 0.8s ease-out; }
+
+        /* Nav */
+        .nav-item { transition: all 0.2s; cursor: pointer; padding: 10px 16px; border-radius: 12px; }
+        .nav-item:hover { background: rgba(255,255,255,0.08); }
+        .nav-item.active { background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.3); }
+
+        /* Page transitions */
+        .page { display: none; }
+        .page.active { display: block; animation: fadeInUp 0.5s ease-out; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+        /* Input */
+        .input-field { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 16px; color: #fff; outline: none; transition: all 0.3s; width: 100%; }
+        .input-field:focus { border-color: rgba(139,92,246,0.5); box-shadow: 0 0 20px rgba(139,92,246,0.1); }
+        .input-field::placeholder { color: rgba(255,255,255,0.3); }
+
+        /* Button */
+        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; border-radius: 12px; padding: 12px 24px; color: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(99,102,241,0.3); }
+
+        .typing-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.4); display: inline-block; animation: pulse 1.4s infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        .transaction-row { transition: all 0.2s; }
+        .transaction-row:hover { background: rgba(255,255,255,0.04); }
+
+        /* Sidebar drawer */
+        .sidebar { position: fixed; left: 0; top: 0; width: 264px; height: 100vh; z-index: 40; transform: translateX(-100%); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 35; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+        .hamburger { position: fixed; top: 68px; left: 20px; z-index: 31; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; }
+        .hamburger:hover { background: rgba(255,255,255,0.1); }
+        .top-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 32; height: 56px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .top-banner img { height: 28px; filter: brightness(0) invert(1); }
+    </style>
+</head>
+<body class="gradient-bg">
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="min-h-screen flex items-center justify-center relative">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="login-card glass-card p-10 w-full max-w-md relative glow-purple">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary mb-4">
+                <i class="fas fa-university text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-800 mb-2">Welcome Back</h1>
+            <p class="text-white/40 text-sm">Sign in to your banking portal</p>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="text-xs text-white/50 mb-1 block uppercase tracking-wider">Customer ID</label>
+                <input id="loginUser" type="text" class="input-field" placeholder="e.g. customer1">
+            </div>
+            <div>
+                <label class="text-xs text-white/50 mb-1 block uppercase tracking-wider">Password</label>
+                <input id="loginPass" type="password" class="input-field" placeholder="Enter password" value="demo123">
+            </div>
+            <div id="loginError" class="text-red-400 text-sm hidden">Invalid customer ID. Try customer1, customer2, customer3, or customer4.</div>
+            <button onclick="handleLogin()" class="btn-primary w-full text-center mt-2">
+                <i class="fas fa-arrow-right-to-bracket mr-2"></i>Sign In
+            </button>
+        </div>
+        <p class="text-white/20 text-xs text-center mt-6">Demo: customer1 / customer2 / customer3 / customer4</p>
+    </div>
+</div>
+
+<!-- MAIN APP (hidden until login) -->
+<div id="mainApp" class="hidden min-h-screen">
+    <!-- Top Banner -->
+
+    <!-- Hamburger Button -->
+    <div class="hamburger glass" id="hamburgerBtn" onclick="toggleSidebar()">
+        <i class="fas fa-bars text-white/70"></i>
+    </div>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <!-- Sidebar -->
+    <aside class="sidebar glass-light p-6 flex flex-col" id="sidebarDrawer">
+        <div class="flex items-center justify-between mb-10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
+                    <i class="fas fa-university text-sm"></i>
+                </div>
+                <div>
+                    <div class="font-700 text-sm">NexusBank</div>
+                    <div class="text-white/30 text-xs" id="sidebarUser">customer1</div>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="text-white/30 hover:text-white transition"><i class="fas fa-xmark text-lg"></i></button>
+        </div>
+        <nav class="space-y-1 flex-1">
+            <div class="nav-item" data-page="home" onclick="navigateTo('home')">
+                <i class="fas fa-house mr-3 text-pink-400 w-5"></i>Home
+            </div>
+            <div class="nav-item active" data-page="balance" onclick="navigateTo('balance')">
+                <i class="fas fa-wallet mr-3 text-purple-400 w-5"></i>Balance
+            </div>
+            <div class="nav-item" data-page="accounts" onclick="navigateTo('accounts')">
+                <i class="fas fa-layer-group mr-3 text-blue-400 w-5"></i>Accounts
+            </div>
+            <div class="nav-item" data-page="accountDetail" onclick="navigateTo('accountDetail')">
+                <i class="fas fa-file-invoice mr-3 text-cyan-400 w-5"></i>Account Detail
+            </div>
+            <div class="nav-item" data-page="transfer" onclick="navigateTo('transfer')">
+                <i class="fas fa-paper-plane mr-3 text-green-400 w-5"></i>Transfer
+            </div>
+            <div class="nav-item" data-page="promotions" onclick="navigateTo('promotions')">
+                <i class="fas fa-gift mr-3 text-amber-400 w-5"></i>Promotions
+            </div>
+        </nav>
+        <div class="mt-auto">
+            <div class="nav-item text-red-400" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt mr-3 w-5"></i>Logout
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content-wrap" id="mainContentWrap">
+        <main class="flex-1 p-8 relative" style="padding-top:120px" id="mainContent">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-3" style="opacity:0.1"></div>
+
+            <!-- HOME PAGE (big chat) -->
+            <div id="page-home" class="page">
+                <div class="flex flex-col items-center justify-center" style="min-height:calc(100vh - 200px)">
+                    <div class="mb-6">
+                        <img src="teller.webp" alt="Bank Teller" style="height:180px; border-radius:20px;">
+                    </div>
+                    <h2 class="text-4xl font-900 text-gradient mb-3">How can I help you?</h2>
+                    <p class="text-white/40 text-sm mb-8 text-center max-w-md">Ask me anything about your accounts, transfers, balance, or promotions. I'll take you right there.</p>
+                    <div class="w-full max-w-2xl glass-card p-6 glow-purple">
+                        <div class="flex-1 overflow-y-auto flex flex-col gap-3 mb-4" id="homeChatMessages" style="max-height:300px">
+                            <div class="chat-msg bot">Hi there! 👋 I'm NexusBot. Tell me what you'd like to do today!</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input id="homeChatInput" type="text" class="input-field" placeholder="e.g. I want to transfer to Tony King..." onkeydown="if(event.key==='Enter')sendHomeChat()">
+                            <button onclick="sendHomeChat()" class="btn-primary px-5"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                        <div class="flex gap-2 mt-3 flex-wrap justify-center">
+                            <button onclick="sendHomeQuick('I want to transfer to Tony King')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">💸 Transfer to Tony King</button>
+                            <button onclick="sendHomeQuick('Show my balance')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">💰 Show balance</button>
+                            <button onclick="sendHomeQuick('Show promotions')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">🎁 Promotions</button>
+                            <button onclick="sendHomeQuick('I want to check my accounts')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">🏦 My accounts</button>
+                            <button onclick="sendHomeQuick('Help me pay Sarah Chen $500')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">💳 Pay Sarah $500</button>
+                            <button onclick="sendHomeQuick('What is my spending this month?')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">📊 My spending</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BALANCE PAGE -->
+            <div id="page-balance" class="page">
+                <h2 class="text-2xl font-700 mb-6">Dashboard</h2>
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <div class="glass-card p-6 glow-purple">
+                        <div class="text-white/40 text-sm mb-1">Total Balance</div>
+                        <div class="text-4xl font-900 text-gradient">$48,250.00</div>
+                        <div class="text-green-400 text-sm mt-2"><i class="fas fa-arrow-up mr-1"></i>+2.4% this month</div>
+                    </div>
+                    <div class="glass-card p-6">
+                        <div class="text-white/40 text-sm mb-1">Monthly Income</div>
+                        <div class="text-3xl font-800">$12,500</div>
+                        <div class="text-cyan-400 text-sm mt-2"><i class="fas fa-briefcase mr-1"></i>Salary + Freelance</div>
+                    </div>
+                    <div class="glass-card p-6">
+                        <div class="text-white/40 text-sm mb-1">Monthly Spending</div>
+                        <div class="text-3xl font-800">$3,820</div>
+                        <div class="text-amber-400 text-sm mt-2"><i class="fas fa-chart-line mr-1"></i>-5% vs last month</div>
+                    </div>
+                </div>
+                <!-- Chart -->
+                <div class="glass-card p-6 mb-8">
+                    <h3 class="text-lg font-600 mb-4">Spending Overview</h3>
+                    <canvas id="spendingChart" height="100"></canvas>
+                </div>
+                <!-- Recent Transactions -->
+                <div class="glass-card p-6">
+                    <h3 class="text-lg font-600 mb-4">Recent Transactions</h3>
+                    <div class="space-y-3" id="recentTransactions"></div>
+                </div>
+            </div>
+
+            <!-- ACCOUNTS LIST PAGE -->
+            <div id="page-accounts" class="page">
+                <h2 class="text-2xl font-700 mb-6">My Accounts</h2>
+                <div class="grid grid-cols-2 gap-6" id="accountCards"></div>
+            </div>
+
+            <!-- ACCOUNT DETAIL PAGE -->
+            <div id="page-accountDetail" class="page">
+                <h2 class="text-2xl font-700 mb-6">Account Details</h2>
+                <div class="glass-card p-8 mb-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <div class="text-white/40 text-sm">Everyday Savings</div>
+                            <div class="text-4xl font-900 text-gradient mt-1">$24,150.00</div>
+                        </div>
+                        <div class="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center animate-float">
+                            <i class="fas fa-piggy-bank text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-6">
+                        <div class="glass p-4 rounded-xl"><div class="text-white/40 text-xs">Account Number</div><div class="font-600 mt-1">0412-7839-5521</div></div>
+                        <div class="glass p-4 rounded-xl"><div class="text-white/40 text-xs">BSB</div><div class="font-600 mt-1">032-089</div></div>
+                        <div class="glass p-4 rounded-xl"><div class="text-white/40 text-xs">Interest Rate</div><div class="font-600 mt-1 text-green-400">4.75% p.a.</div></div>
+                    </div>
+                </div>
+                <div class="glass-card p-6">
+                    <h3 class="text-lg font-600 mb-4">Transaction History</h3>
+                    <div class="space-y-2" id="accountTransactions"></div>
+                </div>
+            </div>
+
+            <!-- TRANSFER PAGE -->
+            <div id="page-transfer" class="page">
+                <h2 class="text-2xl font-700 mb-6">Transfer Funds</h2>
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="glass-card p-8">
+                        <h3 class="text-lg font-600 mb-6">Transfer Details</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs text-white/50 mb-1 block uppercase tracking-wider">From Account</label>
+                                <select id="transferFrom" class="input-field">
+                                    <option value="savings">Everyday Savings - $24,150.00</option>
+                                    <option value="checking">Smart Checking - $18,320.00</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-white/50 mb-1 block uppercase tracking-wider">Recipient Name</label>
+                                <input id="transferName" type="text" class="input-field" placeholder="Enter recipient name">
+                            </div>
+                            <div>
+                                <label class="text-xs text-white/50 mb-1 block uppercase tracking-wider">Recipient BSB</label>
+                                <input id="transferBSB" type="text" class="input-field" placeholder="e.g. 062-000">
+                            </div>
+                            <div>
+                                <label class="text-xs text-white/50 mb-1 block uppercase tracking-wider">Recipient Account</label>
+                                <input id="transferAccount" type="text" class="input-field" placeholder="e.g. 1234-5678">
+                            </div>
+                            <div>
+                                <label class="text-xs text-white/50 mb-1 block uppercase tracking-wider">Amount (AUD)</label>
+                                <input id="transferAmount" type="text" class="input-field" placeholder="$0.00">
+                            </div>
+                            <div>
+                                <label class="text-xs text-white/50 mb-1 block uppercase tracking-wider">Description</label>
+                                <input id="transferDesc" type="text" class="input-field" placeholder="Optional message">
+                            </div>
+                            <button onclick="confirmTransfer()" class="btn-primary w-full mt-2"><i class="fas fa-paper-plane mr-2"></i>Send Transfer</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="glass-card p-6 mb-6">
+                            <h3 class="text-lg font-600 mb-4">Recent Payees</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3 p-3 glass rounded-xl cursor-pointer hover:bg-white/5 transition" onclick="fillPayee('Tony King','062-114','8827-3391')">
+                                    <div class="w-10 h-10 rounded-full gradient-accent flex items-center justify-center text-sm font-700">TK</div>
+                                    <div><div class="font-500 text-sm">Tony King</div><div class="text-white/30 text-xs">062-114 | 8827-3391</div></div>
+                                </div>
+                                <div class="flex items-center gap-3 p-3 glass rounded-xl cursor-pointer hover:bg-white/5 transition" onclick="fillPayee('Sarah Chen','033-221','5512-0098')">
+                                    <div class="w-10 h-10 rounded-full gradient-success flex items-center justify-center text-sm font-700">SC</div>
+                                    <div><div class="font-500 text-sm">Sarah Chen</div><div class="text-white/30 text-xs">033-221 | 5512-0098</div></div>
+                                </div>
+                                <div class="flex items-center gap-3 p-3 glass rounded-xl cursor-pointer hover:bg-white/5 transition" onclick="fillPayee('James Wu','084-556','7790-2314')">
+                                    <div class="w-10 h-10 rounded-full gradient-warm flex items-center justify-center text-sm font-700">JW</div>
+                                    <div><div class="font-500 text-sm">James Wu</div><div class="text-white/30 text-xs">084-556 | 7790-2314</div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card p-6">
+                            <h3 class="text-lg font-600 mb-3">Transfer Limits</h3>
+                            <div class="space-y-3">
+                                <div><div class="flex justify-between text-sm mb-1"><span class="text-white/50">Daily Used</span><span>$1,200 / $50,000</span></div><div class="w-full h-2 rounded-full bg-white/10"><div class="h-2 rounded-full gradient-primary" style="width:2.4%"></div></div></div>
+                                <div><div class="flex justify-between text-sm mb-1"><span class="text-white/50">Monthly Used</span><span>$8,500 / $200,000</span></div><div class="w-full h-2 rounded-full bg-white/10"><div class="h-2 rounded-full gradient-accent" style="width:4.25%"></div></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROMOTIONS PAGE -->
+            <div id="page-promotions" class="page">
+                <h2 class="text-2xl font-700 mb-6">Exclusive Offers</h2>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="glass-card p-8 glow-purple relative overflow-hidden">
+                        <div class="orb" style="width:200px;height:200px;background:#6366f1;top:-50px;right:-50px;opacity:0.2"></div>
+                        <div class="relative">
+                            <span class="text-xs uppercase tracking-wider text-purple-300 font-600">Limited Time</span>
+                            <h3 class="text-2xl font-800 mt-2 mb-2">5.25% Savings Rate</h3>
+                            <p class="text-white/50 text-sm mb-4">Lock in our highest-ever rate on term deposits. Minimum $5,000 for 12 months.</p>
+                            <button class="btn-primary text-sm"><i class="fas fa-arrow-right mr-2"></i>Apply Now</button>
+                        </div>
+                    </div>
+                    <div class="glass-card p-8 glow-blue relative overflow-hidden">
+                        <div class="orb" style="width:200px;height:200px;background:#06b6d4;top:-50px;right:-50px;opacity:0.2"></div>
+                        <div class="relative">
+                            <span class="text-xs uppercase tracking-wider text-cyan-300 font-600">New Offer</span>
+                            <h3 class="text-2xl font-800 mt-2 mb-2">0% Balance Transfer</h3>
+                            <p class="text-white/50 text-sm mb-4">Transfer existing credit card balances at 0% p.a. for 18 months. No annual fee first year.</p>
+                            <button class="btn-primary text-sm"><i class="fas fa-arrow-right mr-2"></i>Learn More</button>
+                        </div>
+                    </div>
+                    <div class="glass-card p-8 relative overflow-hidden">
+                        <div class="orb" style="width:200px;height:200px;background:#10b981;top:-50px;right:-50px;opacity:0.2"></div>
+                        <div class="relative">
+                            <span class="text-xs uppercase tracking-wider text-green-300 font-600">Cashback</span>
+                            <h3 class="text-2xl font-800 mt-2 mb-2">3% Cashback Card</h3>
+                            <p class="text-white/50 text-sm mb-4">Earn 3% cashback on groceries, dining, and fuel. No cap on rewards for the first 6 months.</p>
+                            <button class="btn-primary text-sm"><i class="fas fa-arrow-right mr-2"></i>Get Card</button>
+                        </div>
+                    </div>
+                    <div class="glass-card p-8 relative overflow-hidden">
+                        <div class="orb" style="width:200px;height:200px;background:#f59e0b;top:-50px;right:-50px;opacity:0.2"></div>
+                        <div class="relative">
+                            <span class="text-xs uppercase tracking-wider text-amber-300 font-600">Home Loan</span>
+                            <h3 class="text-2xl font-800 mt-2 mb-2">6.19% Home Rate</h3>
+                            <p class="text-white/50 text-sm mb-4">Our lowest variable rate with offset. Free property valuation and no application fees.</p>
+                            <button class="btn-primary text-sm"><i class="fas fa-arrow-right mr-2"></i>Calculate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chat Bubble -->
+    <div class="chat-bubble gradient-primary glow-purple" id="chatBubble" onclick="toggleChat()">
+        <i class="fas fa-comment-dots text-xl"></i>
+    </div>
+
+    <!-- Chat Panel -->
+    <div class="chat-container glass-light" id="chatPanel">
+        <div class="flex flex-col h-full">
+            <div class="border-b border-white/10">
+                <div class="flex items-center justify-end p-2">
+                    <button onclick="toggleChat()" class="text-white/30 hover:text-white transition"><i class="fas fa-xmark text-lg"></i></button>
+                </div>
+                <div class="flex flex-col items-center pb-4">
+                    <img src="teller.webp" alt="Bank Teller" style="height:120px; border-radius:16px;" class="mb-3">
+                    <div class="font-700 text-base">NexusBot</div>
+                    <div class="text-white/30 text-xs">Your banking assistant · Online</div>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-3" id="chatMessages">
+                <div class="chat-msg bot">Hi there! 👋 I'm NexusBot, your banking assistant. How can I help you today?</div>
+            </div>
+            <div class="p-4 border-t border-white/10">
+                <div class="flex gap-2">
+                    <input id="chatInput" type="text" class="input-field text-sm" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()">
+                    <button onclick="sendChat()" class="btn-primary px-4"><i class="fas fa-paper-plane"></i></button>
+                </div>
+                <div class="flex gap-2 mt-2 flex-wrap" id="quickReplies">
+                    <button onclick="sendQuick('I want to transfer to Tony King')" class="text-xs glass rounded-full px-3 py-1 hover:bg-white/10 transition cursor-pointer">Transfer to Tony King</button>
+                    <button onclick="sendQuick('Show my balance')" class="text-xs glass rounded-full px-3 py-1 hover:bg-white/10 transition cursor-pointer">Show balance</button>
+                    <button onclick="sendQuick('Show promotions')" class="text-xs glass rounded-full px-3 py-1 hover:bg-white/10 transition cursor-pointer">Promotions</button>
+                    <button onclick="sendQuick('I want to check my accounts')" class="text-xs glass rounded-full px-3 py-1 hover:bg-white/10 transition cursor-pointer">My accounts</button>
+                    <button onclick="sendQuick('Help me pay Sarah Chen $500')" class="text-xs glass rounded-full px-3 py-1 hover:bg-white/10 transition cursor-pointer">Pay Sarah $500</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transfer Success Modal -->
+<div id="transferModal" class="fixed inset-0 z-50 hidden items-center justify-center" style="background:rgba(0,0,0,0.6);backdrop-filter:blur(8px)">
+    <div class="glass-card p-10 text-center max-w-sm animate-fadeInUp">
+        <div class="w-20 h-20 rounded-full gradient-success flex items-center justify-center mx-auto mb-4"><i class="fas fa-check text-3xl"></i></div>
+        <h3 class="text-2xl font-800 mb-2">Transfer Sent!</h3>
+        <p class="text-white/50 text-sm mb-6">Your transfer has been submitted and is being processed.</p>
+        <button onclick="closeModal()" class="btn-primary">Done</button>
+    </div>
+</div>
+
+<script>
+  // ========== DATA ==========
+  const customers = {
+    customer1: { name: 'Alex Morgan', defaultPage: 'balance' },
+    customer2: { name: 'Jordan Lee', defaultPage: 'accounts' },
+    customer3: { name: 'Sam Rivera', defaultPage: 'transfer' },
+    customer4: { name: 'Chris Taylor', defaultPage: 'home' },
+  };
+
+  const accounts = [
+    { name: 'Everyday Savings', number: '0412-7839-5521', bsb: '032-089', balance: 24150.00, type: 'savings', icon: 'fa-piggy-bank', gradient: 'gradient-primary' },
+    { name: 'Smart Checking', number: '0412-7839-5522', bsb: '032-089', balance: 18320.00, type: 'checking', icon: 'fa-money-check', gradient: 'gradient-accent' },
+    { name: 'Travel Card', number: '4532-XXXX-XXXX-8821', bsb: '-', balance: 3280.00, type: 'credit', icon: 'fa-plane', gradient: 'gradient-warm' },
+    { name: 'Term Deposit', number: '0412-7839-5599', bsb: '032-089', balance: 2500.00, type: 'deposit', icon: 'fa-vault', gradient: 'gradient-success' },
+  ];
+
+  const transactions = [
+    { desc: 'Woolworths Groceries', amount: -128.50, date: 'Today', icon: 'fa-shopping-cart', color: 'text-red-400' },
+    { desc: 'Salary - Acme Corp', amount: 6250.00, date: 'Yesterday', icon: 'fa-briefcase', color: 'text-green-400' },
+    { desc: 'Netflix Subscription', amount: -22.99, date: 'Mar 15', icon: 'fa-tv', color: 'text-red-400' },
+    { desc: 'Transfer from Sarah', amount: 350.00, date: 'Mar 14', icon: 'fa-arrow-down', color: 'text-green-400' },
+    { desc: 'Uber Trip', amount: -34.80, date: 'Mar 14', icon: 'fa-car', color: 'text-red-400' },
+    { desc: 'Apple Store', amount: -199.00, date: 'Mar 13', icon: 'fa-apple-whole', color: 'text-red-400' },
+    { desc: 'Freelance Payment', amount: 1800.00, date: 'Mar 12', icon: 'fa-laptop', color: 'text-green-400' },
+    { desc: 'Electricity Bill', amount: -215.30, date: 'Mar 11', icon: 'fa-bolt', color: 'text-red-400' },
+  ];
+
+  const payees = {
+    'tony king': { name: 'Tony King', bsb: '062-114', account: '8827-3391' },
+    'sarah chen': { name: 'Sarah Chen', bsb: '033-221', account: '5512-0098' },
+    'james wu': { name: 'James Wu', bsb: '084-556', account: '7790-2314' },
+  };
+
+  // ========== CHAT RESPONSES ==========
+  const chatResponses = [
+    {
+      keywords: ['transfer to tony', 'pay tony', 'send tony', 'transfer tony king'],
+      reply: "Sure! I've prepared a transfer to **Tony King**. Please check the transaction information and confirm the amount. 💸",
+      action: () => { navigateTo('transfer'); fillPayee('Tony King', '062-114', '8827-3391'); }
+    },
+    {
+      keywords: ['transfer to sarah', 'pay sarah', 'send sarah'],
+      reply: "No problem! I've set up a transfer to **Sarah Chen**. Please review the details and enter the amount. 💸",
+      action: () => { navigateTo('transfer'); fillPayee('Sarah Chen', '033-221', '5512-0098'); }
+    },
+    {
+      keywords: ['pay sarah chen $500', 'send sarah $500', 'transfer sarah 500', 'help me pay sarah chen $500'],
+      reply: "Done! I've pre-filled a **$500 transfer to Sarah Chen**. Please review and confirm. 💸",
+      action: () => { navigateTo('transfer'); fillPayee('Sarah Chen', '033-221', '5512-0098'); document.getElementById('transferAmount').value = '$500.00'; document.getElementById('transferDesc').value = 'Payment to Sarah'; }
+    },
+    {
+      keywords: ['transfer to james', 'pay james', 'send james'],
+      reply: "I've prepared a transfer to **James Wu**. Please fill in the amount and confirm. 💸",
+      action: () => { navigateTo('transfer'); fillPayee('James Wu', '084-556', '7790-2314'); }
+    },
+    {
+      keywords: ['balance', 'how much', 'my money', 'show my balance'],
+      reply: "Your total balance across all accounts is **$48,250.00** 📊. Here's your dashboard!",
+      action: () => { navigateTo('balance'); }
+    },
+    {
+      keywords: ['account', 'my accounts', 'list accounts', 'check my accounts'],
+      reply: "Here are all your accounts. You have **4 accounts** with a combined balance of **$48,250.00** 🏦",
+      action: () => { navigateTo('accounts'); }
+    },
+    {
+      keywords: ['promotion', 'offer', 'deal', 'show promotions'],
+      reply: "Great timing! We have some amazing offers for you right now 🎉 Check them out!",
+      action: () => { navigateTo('promotions'); }
+    },
+    {
+      keywords: ['interest rate', 'savings rate'],
+      reply: "Your Everyday Savings account earns **4.75% p.a.** 📈 We also have a special **5.25% term deposit** offer right now!",
+      action: () => { navigateTo('promotions'); }
+    },
+    {
+      keywords: ['help', 'what can you do', 'options'],
+      reply: "I can help you with:\n• 💰 Check your **balance**\n• 🏦 View your **accounts**\n• 💸 Make a **transfer**\n• 🎁 See **promotions**\n• 📊 View **account details**\n\nJust ask!",
+      action: null
+    },
+    {
+      keywords: ['hello', 'hi', 'hey', 'good morning', 'good afternoon'],
+      reply: "Hello! 😊 Welcome back. How can I assist you with your banking today?",
+      action: null
+    },
+    {
+      keywords: ['thank', 'thanks', 'cheers'],
+      reply: "You're welcome! 😊 Let me know if there's anything else I can help with.",
+      action: null
+    },
+    {
+      keywords: ['card', 'credit card', 'travel card'],
+      reply: "Your Travel Card has a balance of **$3,280.00**. Would you like to see the details or make a payment?",
+      action: () => { navigateTo('accounts'); }
+    },
+    {
+      keywords: ['spend', 'spending', 'expenses'],
+      reply: "This month you've spent **$3,820** — that's **5% less** than last month! 🎉 Your biggest category is groceries at $620.",
+      action: () => { navigateTo('balance'); }
+    },
+  ];
+
+  // ========== STATE ==========
+  let currentUser = null;
+  let chatOpen = false;
+
+  // ========== LOGIN ==========
+  function handleLogin() {
+    const user = document.getElementById('loginUser').value.trim().toLowerCase();
+    const errEl = document.getElementById('loginError');
+    if (!customers[user]) { errEl.classList.remove('hidden'); return; }
+    errEl.classList.add('hidden');
+    currentUser = user;
+    document.getElementById('sidebarUser').textContent = customers[user].name;
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('mainApp').classList.remove('hidden');
+    navigateTo(customers[user].defaultPage);
+    renderAccountCards();
+    renderTransactions();
+    renderAccountTransactions();
+    initChart();
+  }
+
+  function handleLogout() {
+    currentUser = null;
+    document.getElementById('mainApp').classList.add('hidden');
+    document.getElementById('loginPage').classList.remove('hidden');
+    document.getElementById('loginUser').value = '';
+    // Reset chat
+    document.getElementById('chatMessages').innerHTML = '<div class="chat-msg bot">Hi there! 👋 I\'m NexusBot, your banking assistant. How can I help you today?</div>';
+    document.getElementById('homeChatMessages').innerHTML = '<div class="chat-msg bot">Hi there! 👋 I\'m NexusBot. Tell me what you\'d like to do today!</div>';
+    if (chatOpen) toggleChat();
+  }
+
+  // ========== SIDEBAR ==========
+  let sidebarOpen = false;
+  function toggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+    document.getElementById('sidebarDrawer').classList.toggle('open', sidebarOpen);
+    document.getElementById('sidebarOverlay').classList.toggle('open', sidebarOpen);
+  }
+
+  // ========== NAVIGATION ==========
+  function navigateTo(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('.nav-item[data-page]').forEach(n => {
+      n.classList.toggle('active', n.dataset.page === page);
+    });
+    if (sidebarOpen) toggleSidebar();
+    // Auto-show chat on function pages, hide on home
+    if (page !== 'home' && !chatOpen) toggleChat();
+    if (page === 'home' && chatOpen) toggleChat();
+  }
+
+  // ========== RENDER ==========
+  function renderAccountCards() {
+    const container = document.getElementById('accountCards');
+    container.innerHTML = accounts.map(a => `
+    <div class="glass-card p-6 cursor-pointer hover:bg-white/5 transition" onclick="navigateTo('accountDetail')">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 rounded-xl ${a.gradient} flex items-center justify-center"><i class="fas ${a.icon}"></i></div>
+        <span class="text-xs text-white/30 uppercase">${a.type}</span>
+      </div>
+      <div class="text-white/50 text-sm">${a.name}</div>
+      <div class="text-2xl font-800 mt-1">$${a.balance.toLocaleString('en-US', {minimumFractionDigits:2})}</div>
+      <div class="text-white/30 text-xs mt-2">${a.bsb !== '-' ? a.bsb + ' | ' : ''}${a.number}</div>
+    </div>
+  `).join('');
+  }
+
+  function renderTransactions() {
+    const container = document.getElementById('recentTransactions');
+    container.innerHTML = transactions.slice(0,5).map(t => `
+    <div class="flex items-center justify-between p-3 transaction-row rounded-xl">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl glass flex items-center justify-center"><i class="fas ${t.icon} text-sm text-white/50"></i></div>
+        <div><div class="font-500 text-sm">${t.desc}</div><div class="text-white/30 text-xs">${t.date}</div></div>
+      </div>
+      <div class="font-600 ${t.color}">${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toFixed(2)}</div>
+    </div>
+  `).join('');
+  }
+
+  function renderAccountTransactions() {
+    const container = document.getElementById('accountTransactions');
+    container.innerHTML = transactions.map(t => `
+    <div class="flex items-center justify-between p-3 transaction-row rounded-xl">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl glass flex items-center justify-center"><i class="fas ${t.icon} text-sm text-white/50"></i></div>
+        <div><div class="font-500 text-sm">${t.desc}</div><div class="text-white/30 text-xs">${t.date}</div></div>
+      </div>
+      <div class="font-600 ${t.color}">${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toFixed(2)}</div>
+    </div>
+  `).join('');
+  }
+
+  // ========== CHART ==========
+  function initChart() {
+    const ctx = document.getElementById('spendingChart');
+    if (!ctx) return;
+    if (window._chart) window._chart.destroy();
+    window._chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+        datasets: [{
+          label: 'Spending',
+          data: [3200, 4100, 5800, 3900, 4020, 3820],
+          backgroundColor: 'rgba(99,102,241,0.5)',
+          borderColor: 'rgba(99,102,241,0.8)',
+          borderWidth: 1,
+          borderRadius: 8,
+        }, {
+          label: 'Income',
+          data: [11000, 11500, 13200, 12000, 12500, 12500],
+          backgroundColor: 'rgba(6,182,212,0.3)',
+          borderColor: 'rgba(6,182,212,0.6)',
+          borderWidth: 1,
+          borderRadius: 8,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter' } } } },
+        scales: {
+          x: { ticks: { color: 'rgba(255,255,255,0.3)' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+          y: { ticks: { color: 'rgba(255,255,255,0.3)', callback: v => '$' + v.toLocaleString() }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        }
+      }
+    });
+  }
+
+  // ========== TRANSFER ==========
+  function fillPayee(name, bsb, account) {
+    document.getElementById('transferName').value = name;
+    document.getElementById('transferBSB').value = bsb;
+    document.getElementById('transferAccount').value = account;
+    document.getElementById('transferAmount').focus();
+  }
+
+  function confirmTransfer() {
+    const modal = document.getElementById('transferModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+  function closeModal() {
+    const modal = document.getElementById('transferModal');
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+    // Clear form
+    document.getElementById('transferName').value = '';
+    document.getElementById('transferBSB').value = '';
+    document.getElementById('transferAccount').value = '';
+    document.getElementById('transferAmount').value = '';
+    document.getElementById('transferDesc').value = '';
+  }
+
+  // ========== CHAT ==========
+  function toggleChat() {
+    chatOpen = !chatOpen;
+    document.getElementById('chatPanel').classList.toggle('open', chatOpen);
+    document.getElementById('mainContentWrap').classList.toggle('chat-open', chatOpen);
+    document.getElementById('chatBubble').style.display = chatOpen ? 'none' : 'flex';
+    if (chatOpen) document.getElementById('chatInput').focus();
+  }
+
+  function sendQuick(text) {
+    document.getElementById('chatInput').value = text;
+    sendChat();
+  }
+
+  function sendChat() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+
+    const container = document.getElementById('chatMessages');
+    // User message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'chat-msg user';
+    userMsg.textContent = text;
+    container.appendChild(userMsg);
+    container.scrollTop = container.scrollHeight;
+
+    // Typing indicator
+    const typing = document.createElement('div');
+    typing.className = 'chat-msg bot flex gap-1 items-center';
+    typing.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+    container.appendChild(typing);
+    container.scrollTop = container.scrollHeight;
+
+    // Find response
+    const lower = text.toLowerCase();
+    let matched = null;
+
+    // Sort by keyword length (longer = more specific = higher priority)
+    const sorted = [...chatResponses].sort((a, b) => {
+      const aMax = Math.max(...a.keywords.map(k => k.length));
+      const bMax = Math.max(...b.keywords.map(k => k.length));
+      return bMax - aMax;
+    });
+
+    for (const r of sorted) {
+      if (r.keywords.some(k => lower.includes(k))) {
+        matched = r;
+        break;
+      }
+    }
+
+    setTimeout(() => {
+      container.removeChild(typing);
+      const botMsg = document.createElement('div');
+      botMsg.className = 'chat-msg bot';
+      if (matched) {
+        botMsg.innerHTML = matched.reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>').replace(/• /g, '&bull; ');
+        container.appendChild(botMsg);
+        if (matched.action) setTimeout(matched.action, 300);
+      } else {
+        botMsg.innerHTML = "I'm not sure I understand. Could you try asking about your <strong>balance</strong>, <strong>accounts</strong>, <strong>transfers</strong>, or <strong>promotions</strong>? 🤔";
+        container.appendChild(botMsg);
+      }
+      container.scrollTop = container.scrollHeight;
+    }, 1000 + Math.random() * 500);
+  }
+
+  // ========== HOME CHAT ==========
+  function sendHomeQuick(text) {
+    document.getElementById('homeChatInput').value = text;
+    sendHomeChat();
+  }
+
+  function sendHomeChat() {
+    const input = document.getElementById('homeChatInput');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+
+    const container = document.getElementById('homeChatMessages');
+    // User message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'chat-msg user';
+    userMsg.textContent = text;
+    container.appendChild(userMsg);
+    container.scrollTop = container.scrollHeight;
+
+    // Typing indicator
+    const typing = document.createElement('div');
+    typing.className = 'chat-msg bot flex gap-1 items-center';
+    typing.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+    container.appendChild(typing);
+    container.scrollTop = container.scrollHeight;
+
+    // Find response
+    const lower = text.toLowerCase();
+    let matched = null;
+    const sorted = [...chatResponses].sort((a, b) => {
+      const aMax = Math.max(...a.keywords.map(k => k.length));
+      const bMax = Math.max(...b.keywords.map(k => k.length));
+      return bMax - aMax;
+    });
+    for (const r of sorted) {
+      if (r.keywords.some(k => lower.includes(k))) { matched = r; break; }
+    }
+
+    setTimeout(() => {
+      container.removeChild(typing);
+      const botMsg = document.createElement('div');
+      botMsg.className = 'chat-msg bot';
+      if (matched) {
+        botMsg.innerHTML = matched.reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>').replace(/• /g, '&bull; ');
+        container.appendChild(botMsg);
+        container.scrollTop = container.scrollHeight;
+        // If there's a navigation action, transition: copy chat to right panel, navigate, open panel
+        if (matched.action) {
+          setTimeout(() => {
+            // Copy all home chat messages to the right side chat panel
+            const rightChat = document.getElementById('chatMessages');
+            rightChat.innerHTML = container.innerHTML;
+            // Execute the action (navigates to page)
+            matched.action();
+            // Open the right side chat panel
+            if (!chatOpen) toggleChat();
+          }, 500);
+        }
+      } else {
+        botMsg.innerHTML = "I'm not sure I understand. Could you try asking about your <strong>balance</strong>, <strong>accounts</strong>, <strong>transfers</strong>, or <strong>promotions</strong>? 🤔";
+        container.appendChild(botMsg);
+        container.scrollTop = container.scrollHeight;
+      }
+    }, 1000 + Math.random() * 500);
+  }
+
+  // Enter key on login
+  document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+  document.getElementById('loginUser').addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+</script>
+</body>
+</html>
