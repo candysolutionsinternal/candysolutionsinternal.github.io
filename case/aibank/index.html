@@ -59,11 +59,23 @@
         .chat-msg.bot { background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.2); border-bottom-left-radius: 4px; align-self: flex-start; }
         .chat-msg.user { background: rgba(6,182,212,0.2); border: 1px solid rgba(6,182,212,0.2); border-bottom-right-radius: 4px; align-self: flex-end; }
 
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .chat-container { width: 100%; min-width: 100%; left: 0; }
+            .main-content-wrap.chat-open { margin-right: 0; }
+            .chat-bubble { bottom: 20px; right: 20px; width: 56px; height: 56px; }
+            .hamburger { top: 16px; left: 12px; }
+        }
+        @media (max-width: 640px) {
+            .login-card { margin: 16px; padding: 24px !important; }
+            .orb { display: none; }
+        }
+
         /* Login */
         .login-card { animation: fadeInUp 0.8s ease-out; }
 
         /* Nav */
-        .nav-item { transition: all 0.2s; cursor: pointer; padding: 10px 16px; border-radius: 12px; }
+        .nav-item { transition: all 0.2s; cursor: pointer; padding: 12px 16px; border-radius: 12px; font-size: 14px; }
         .nav-item:hover { background: rgba(255,255,255,0.08); }
         .nav-item.active { background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.3); }
 
@@ -77,13 +89,19 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
 
         /* Input */
-        .input-field { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 16px; color: #fff; outline: none; transition: all 0.3s; width: 100%; }
+        .input-field { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 14px; color: #fff; outline: none; transition: all 0.3s; width: 100%; font-size: 14px; }
         .input-field:focus { border-color: rgba(139,92,246,0.5); box-shadow: 0 0 20px rgba(139,92,246,0.1); }
         .input-field::placeholder { color: rgba(255,255,255,0.3); }
+        @media (min-width: 640px) {
+            .input-field { padding: 12px 16px; font-size: 16px; }
+        }
 
         /* Button */
-        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; border-radius: 12px; padding: 12px 24px; color: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; border-radius: 12px; padding: 10px 20px; color: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(99,102,241,0.3); }
+        @media (min-width: 640px) {
+            .btn-primary { padding: 12px 24px; font-size: 16px; }
+        }
 
         .typing-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.4); display: inline-block; animation: pulse 1.4s infinite; }
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
@@ -93,11 +111,11 @@
         .transaction-row:hover { background: rgba(255,255,255,0.04); }
 
         /* Sidebar drawer */
-        .sidebar { position: fixed; left: 0; top: 0; width: 264px; height: 100vh; z-index: 40; transform: translateX(-100%); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); }
+        .sidebar { position: fixed; left: 0; top: 0; width: 280px; max-width: 85vw; height: 100vh; z-index: 40; transform: translateX(-100%); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); }
         .sidebar.open { transform: translateX(0); }
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 35; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
-        .hamburger { position: fixed; top: 68px; left: 20px; z-index: 31; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; }
+        .hamburger { position: fixed; top: 16px; left: 16px; z-index: 31; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; }
         .hamburger:hover { background: rgba(255,255,255,0.1); }
         .top-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 32; height: 56px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .top-banner img { height: 28px; filter: brightness(0) invert(1); }
@@ -106,16 +124,16 @@
 <body class="gradient-bg">
 
 <!-- LOGIN PAGE -->
-<div id="loginPage" class="min-h-screen flex items-center justify-center relative">
+<div id="loginPage" class="min-h-screen flex items-center justify-center relative p-4">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-    <div class="login-card glass-card p-10 w-full max-w-md relative glow-purple">
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary mb-4">
-                <i class="fas fa-university text-2xl"></i>
+    <div class="login-card glass-card p-6 sm:p-10 w-full max-w-md relative glow-purple">
+        <div class="text-center mb-6 sm:mb-8">
+            <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl gradient-primary mb-3 sm:mb-4">
+                <i class="fas fa-university text-xl sm:text-2xl"></i>
             </div>
-            <h1 class="text-3xl font-800 mb-2">Welcome Back</h1>
-            <p class="text-white/40 text-sm">Sign in to your banking portal</p>
+            <h1 class="text-2xl sm:text-3xl font-800 mb-2">Welcome Back</h1>
+            <p class="text-white/40 text-xs sm:text-sm">Sign in to your banking portal</p>
         </div>
         <div class="space-y-4">
             <div>
@@ -188,33 +206,33 @@
 
     <!-- Main Content -->
     <div class="main-content-wrap" id="mainContentWrap">
-        <main class="flex-1 p-8 relative" style="padding-top:120px" id="mainContent">
+        <main class="flex-1 p-4 sm:p-8 relative pt-20 sm:pt-28" id="mainContent">
             <div class="orb orb-1"></div>
             <div class="orb orb-3" style="opacity:0.1"></div>
 
             <!-- HOME PAGE (big chat) -->
             <div id="page-home" class="page">
-                <div class="flex flex-col items-center justify-center" style="min-height:calc(100vh - 200px)">
-                    <div class="mb-6">
-                        <img src="teller.webp" alt="Bank Teller" style="height:180px; border-radius:20px;">
+                <div class="flex flex-col items-center justify-center px-2 sm:px-0" style="min-height:calc(100vh - 160px)">
+                    <div class="mb-4 sm:mb-6">
+                        <img src="teller.webp" alt="Bank Teller" class="h-28 sm:h-44 rounded-2xl">
                     </div>
-                    <h2 class="text-4xl font-900 text-gradient mb-3">How can I help you?</h2>
-                    <p class="text-white/40 text-sm mb-8 text-center max-w-md">Ask me anything about your accounts, transfers, balance, or promotions. I'll take you right there.</p>
-                    <div class="w-full max-w-2xl glass-card p-6 glow-purple">
-                        <div class="flex-1 overflow-y-auto flex flex-col gap-3 mb-4" id="homeChatMessages" style="max-height:300px">
+                    <h2 class="text-2xl sm:text-4xl font-900 text-gradient mb-2 sm:mb-3 text-center">How can I help you?</h2>
+                    <p class="text-white/40 text-xs sm:text-sm mb-4 sm:mb-8 text-center max-w-md px-4">Ask me anything about your accounts, transfers, balance, or promotions.</p>
+                    <div class="w-full max-w-2xl glass-card p-4 sm:p-6 glow-purple">
+                        <div class="flex-1 overflow-y-auto flex flex-col gap-2 sm:gap-3 mb-3 sm:mb-4" id="homeChatMessages" style="max-height:200px">
                             <div class="chat-msg bot">Hi there! 👋 I'm NexusBot. Tell me what you'd like to do today!</div>
                         </div>
                         <div class="flex gap-2">
-                            <input id="homeChatInput" type="text" class="input-field" placeholder="e.g. I want to transfer to Tony King..." onkeydown="if(event.key==='Enter')sendHomeChat()">
-                            <button onclick="sendHomeChat()" class="btn-primary px-5"><i class="fas fa-paper-plane"></i></button>
+                            <input id="homeChatInput" type="text" class="input-field text-sm" placeholder="e.g. I want to transfer..." onkeydown="if(event.key==='Enter')sendHomeChat()">
+                            <button onclick="sendHomeChat()" class="btn-primary px-4 sm:px-5"><i class="fas fa-paper-plane"></i></button>
                         </div>
                         <div class="flex gap-2 mt-3 flex-wrap justify-center">
-                            <button onclick="sendHomeQuick('I want to transfer to Tony King')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">💸 Transfer to Tony King</button>
-                            <button onclick="sendHomeQuick('Show my balance')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">💰 Show balance</button>
-                            <button onclick="sendHomeQuick('Show promotions')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">🎁 Promotions</button>
-                            <button onclick="sendHomeQuick('I want to check my accounts')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">🏦 My accounts</button>
-                            <button onclick="sendHomeQuick('Help me pay Sarah Chen $500')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">💳 Pay Sarah $500</button>
-                            <button onclick="sendHomeQuick('What is my spending this month?')" class="text-xs glass rounded-full px-3 py-1.5 hover:bg-white/10 transition cursor-pointer">📊 My spending</button>
+                            <button onclick="sendHomeQuick('I want to transfer to Tony King')" class="text-xs glass rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5 hover:bg-white/10 transition cursor-pointer">💸 Transfer to Tony King</button>
+                            <button onclick="sendHomeQuick('Show my balance')" class="text-xs glass rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5 hover:bg-white/10 transition cursor-pointer">💰 Show balance</button>
+                            <button onclick="sendHomeQuick('Show promotions')" class="text-xs glass rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5 hover:bg-white/10 transition cursor-pointer">🎁 Promotions</button>
+                            <button onclick="sendHomeQuick('I want to check my accounts')" class="text-xs glass rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5 hover:bg-white/10 transition cursor-pointer">🏦 My accounts</button>
+                            <button onclick="sendHomeQuick('Help me pay Sarah Chen $500')" class="text-xs glass rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5 hover:bg-white/10 transition cursor-pointer">💳 Pay Sarah $500</button>
+                            <button onclick="sendHomeQuick('What is my spending this month?')" class="text-xs glass rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5 hover:bg-white/10 transition cursor-pointer">📊 My spending</button>
                         </div>
                     </div>
                 </div>
@@ -222,74 +240,74 @@
 
             <!-- BALANCE PAGE -->
             <div id="page-balance" class="page">
-                <h2 class="text-2xl font-700 mb-6">Dashboard</h2>
+                <h2 class="text-xl sm:text-2xl font-700 mb-4 sm:mb-6">Dashboard</h2>
                 <!-- Summary Cards -->
-                <div class="grid grid-cols-3 gap-6 mb-8">
-                    <div class="glass-card p-6 glow-purple">
-                        <div class="text-white/40 text-sm mb-1">Total Balance</div>
-                        <div class="text-4xl font-900 text-gradient">$48,250.00</div>
-                        <div class="text-green-400 text-sm mt-2"><i class="fas fa-arrow-up mr-1"></i>+2.4% this month</div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                    <div class="glass-card p-4 sm:p-6 glow-purple">
+                        <div class="text-white/40 text-xs sm:text-sm mb-1">Total Balance</div>
+                        <div class="text-2xl sm:text-4xl font-900 text-gradient">$48,250.00</div>
+                        <div class="text-green-400 text-xs sm:text-sm mt-2"><i class="fas fa-arrow-up mr-1"></i>+2.4% this month</div>
                     </div>
-                    <div class="glass-card p-6">
-                        <div class="text-white/40 text-sm mb-1">Monthly Income</div>
-                        <div class="text-3xl font-800">$12,500</div>
-                        <div class="text-cyan-400 text-sm mt-2"><i class="fas fa-briefcase mr-1"></i>Salary + Freelance</div>
+                    <div class="glass-card p-4 sm:p-6">
+                        <div class="text-white/40 text-xs sm:text-sm mb-1">Monthly Income</div>
+                        <div class="text-xl sm:text-3xl font-800">$12,500</div>
+                        <div class="text-cyan-400 text-xs sm:text-sm mt-2"><i class="fas fa-briefcase mr-1"></i>Salary + Freelance</div>
                     </div>
-                    <div class="glass-card p-6">
-                        <div class="text-white/40 text-sm mb-1">Monthly Spending</div>
-                        <div class="text-3xl font-800">$3,820</div>
-                        <div class="text-amber-400 text-sm mt-2"><i class="fas fa-chart-line mr-1"></i>-5% vs last month</div>
+                    <div class="glass-card p-4 sm:p-6">
+                        <div class="text-white/40 text-xs sm:text-sm mb-1">Monthly Spending</div>
+                        <div class="text-xl sm:text-3xl font-800">$3,820</div>
+                        <div class="text-amber-400 text-xs sm:text-sm mt-2"><i class="fas fa-chart-line mr-1"></i>-5% vs last month</div>
                     </div>
                 </div>
                 <!-- Chart -->
-                <div class="glass-card p-6 mb-8">
-                    <h3 class="text-lg font-600 mb-4">Spending Overview</h3>
+                <div class="glass-card p-4 sm:p-6 mb-6 sm:mb-8">
+                    <h3 class="text-base sm:text-lg font-600 mb-3 sm:mb-4">Spending Overview</h3>
                     <canvas id="spendingChart" height="100"></canvas>
                 </div>
                 <!-- Recent Transactions -->
-                <div class="glass-card p-6">
-                    <h3 class="text-lg font-600 mb-4">Recent Transactions</h3>
-                    <div class="space-y-3" id="recentTransactions"></div>
+                <div class="glass-card p-4 sm:p-6">
+                    <h3 class="text-base sm:text-lg font-600 mb-3 sm:mb-4">Recent Transactions</h3>
+                    <div class="space-y-2 sm:space-y-3" id="recentTransactions"></div>
                 </div>
             </div>
 
             <!-- ACCOUNTS LIST PAGE -->
             <div id="page-accounts" class="page">
-                <h2 class="text-2xl font-700 mb-6">My Accounts</h2>
-                <div class="grid grid-cols-2 gap-6" id="accountCards"></div>
+                <h2 class="text-xl sm:text-2xl font-700 mb-4 sm:mb-6">My Accounts</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6" id="accountCards"></div>
             </div>
 
             <!-- ACCOUNT DETAIL PAGE -->
             <div id="page-accountDetail" class="page">
-                <h2 class="text-2xl font-700 mb-6">Account Details</h2>
-                <div class="glass-card p-8 mb-6">
-                    <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl sm:text-2xl font-700 mb-4 sm:mb-6">Account Details</h2>
+                <div class="glass-card p-4 sm:p-8 mb-4 sm:mb-6">
+                    <div class="flex items-center justify-between mb-4 sm:mb-6">
                         <div>
-                            <div class="text-white/40 text-sm">Everyday Savings</div>
-                            <div class="text-4xl font-900 text-gradient mt-1">$24,150.00</div>
+                            <div class="text-white/40 text-xs sm:text-sm">Everyday Savings</div>
+                            <div class="text-2xl sm:text-4xl font-900 text-gradient mt-1">$24,150.00</div>
                         </div>
-                        <div class="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center animate-float">
-                            <i class="fas fa-piggy-bank text-2xl"></i>
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl gradient-primary flex items-center justify-center animate-float">
+                            <i class="fas fa-piggy-bank text-lg sm:text-2xl"></i>
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-6">
-                        <div class="glass p-4 rounded-xl"><div class="text-white/40 text-xs">Account Number</div><div class="font-600 mt-1">0412-7839-5521</div></div>
-                        <div class="glass p-4 rounded-xl"><div class="text-white/40 text-xs">BSB</div><div class="font-600 mt-1">032-089</div></div>
-                        <div class="glass p-4 rounded-xl"><div class="text-white/40 text-xs">Interest Rate</div><div class="font-600 mt-1 text-green-400">4.75% p.a.</div></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
+                        <div class="glass p-3 sm:p-4 rounded-xl"><div class="text-white/40 text-xs">Account Number</div><div class="font-600 mt-1 text-sm sm:text-base">0412-7839-5521</div></div>
+                        <div class="glass p-3 sm:p-4 rounded-xl"><div class="text-white/40 text-xs">BSB</div><div class="font-600 mt-1 text-sm sm:text-base">032-089</div></div>
+                        <div class="glass p-3 sm:p-4 rounded-xl"><div class="text-white/40 text-xs">Interest Rate</div><div class="font-600 mt-1 text-green-400 text-sm sm:text-base">4.75% p.a.</div></div>
                     </div>
                 </div>
-                <div class="glass-card p-6">
-                    <h3 class="text-lg font-600 mb-4">Transaction History</h3>
+                <div class="glass-card p-4 sm:p-6">
+                    <h3 class="text-base sm:text-lg font-600 mb-3 sm:mb-4">Transaction History</h3>
                     <div class="space-y-2" id="accountTransactions"></div>
                 </div>
             </div>
 
             <!-- TRANSFER PAGE -->
             <div id="page-transfer" class="page">
-                <h2 class="text-2xl font-700 mb-6">Transfer Funds</h2>
-                <div class="grid grid-cols-2 gap-8">
-                    <div class="glass-card p-8">
-                        <h3 class="text-lg font-600 mb-6">Transfer Details</h3>
+                <h2 class="text-xl sm:text-2xl font-700 mb-4 sm:mb-6">Transfer Funds</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
+                    <div class="glass-card p-4 sm:p-8">
+                        <h3 class="text-base sm:text-lg font-600 mb-4 sm:mb-6">Transfer Details</h3>
                         <div class="space-y-4">
                             <div>
                                 <label class="text-xs text-white/50 mb-1 block uppercase tracking-wider">From Account</label>
@@ -322,28 +340,28 @@
                         </div>
                     </div>
                     <div>
-                        <div class="glass-card p-6 mb-6">
-                            <h3 class="text-lg font-600 mb-4">Recent Payees</h3>
-                            <div class="space-y-3">
-                                <div class="flex items-center gap-3 p-3 glass rounded-xl cursor-pointer hover:bg-white/5 transition" onclick="fillPayee('Tony King','062-114','8827-3391')">
-                                    <div class="w-10 h-10 rounded-full gradient-accent flex items-center justify-center text-sm font-700">TK</div>
+                        <div class="glass-card p-4 sm:p-6 mb-4 sm:mb-6">
+                            <h3 class="text-base sm:text-lg font-600 mb-3 sm:mb-4">Recent Payees</h3>
+                            <div class="space-y-2 sm:space-y-3">
+                                <div class="flex items-center gap-3 p-2 sm:p-3 glass rounded-xl cursor-pointer hover:bg-white/5 transition" onclick="fillPayee('Tony King','062-114','8827-3391')">
+                                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full gradient-accent flex items-center justify-center text-xs sm:text-sm font-700">TK</div>
                                     <div><div class="font-500 text-sm">Tony King</div><div class="text-white/30 text-xs">062-114 | 8827-3391</div></div>
                                 </div>
-                                <div class="flex items-center gap-3 p-3 glass rounded-xl cursor-pointer hover:bg-white/5 transition" onclick="fillPayee('Sarah Chen','033-221','5512-0098')">
-                                    <div class="w-10 h-10 rounded-full gradient-success flex items-center justify-center text-sm font-700">SC</div>
+                                <div class="flex items-center gap-3 p-2 sm:p-3 glass rounded-xl cursor-pointer hover:bg-white/5 transition" onclick="fillPayee('Sarah Chen','033-221','5512-0098')">
+                                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full gradient-success flex items-center justify-center text-xs sm:text-sm font-700">SC</div>
                                     <div><div class="font-500 text-sm">Sarah Chen</div><div class="text-white/30 text-xs">033-221 | 5512-0098</div></div>
                                 </div>
-                                <div class="flex items-center gap-3 p-3 glass rounded-xl cursor-pointer hover:bg-white/5 transition" onclick="fillPayee('James Wu','084-556','7790-2314')">
-                                    <div class="w-10 h-10 rounded-full gradient-warm flex items-center justify-center text-sm font-700">JW</div>
+                                <div class="flex items-center gap-3 p-2 sm:p-3 glass rounded-xl cursor-pointer hover:bg-white/5 transition" onclick="fillPayee('James Wu','084-556','7790-2314')">
+                                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full gradient-warm flex items-center justify-center text-xs sm:text-sm font-700">JW</div>
                                     <div><div class="font-500 text-sm">James Wu</div><div class="text-white/30 text-xs">084-556 | 7790-2314</div></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="glass-card p-6">
-                            <h3 class="text-lg font-600 mb-3">Transfer Limits</h3>
+                        <div class="glass-card p-4 sm:p-6">
+                            <h3 class="text-base sm:text-lg font-600 mb-3">Transfer Limits</h3>
                             <div class="space-y-3">
-                                <div><div class="flex justify-between text-sm mb-1"><span class="text-white/50">Daily Used</span><span>$1,200 / $50,000</span></div><div class="w-full h-2 rounded-full bg-white/10"><div class="h-2 rounded-full gradient-primary" style="width:2.4%"></div></div></div>
-                                <div><div class="flex justify-between text-sm mb-1"><span class="text-white/50">Monthly Used</span><span>$8,500 / $200,000</span></div><div class="w-full h-2 rounded-full bg-white/10"><div class="h-2 rounded-full gradient-accent" style="width:4.25%"></div></div></div>
+                                <div><div class="flex justify-between text-xs sm:text-sm mb-1"><span class="text-white/50">Daily Used</span><span>$1,200 / $50,000</span></div><div class="w-full h-2 rounded-full bg-white/10"><div class="h-2 rounded-full gradient-primary" style="width:2.4%"></div></div></div>
+                                <div><div class="flex justify-between text-xs sm:text-sm mb-1"><span class="text-white/50">Monthly Used</span><span>$8,500 / $200,000</span></div><div class="w-full h-2 rounded-full bg-white/10"><div class="h-2 rounded-full gradient-accent" style="width:4.25%"></div></div></div>
                             </div>
                         </div>
                     </div>
@@ -352,42 +370,42 @@
 
             <!-- PROMOTIONS PAGE -->
             <div id="page-promotions" class="page">
-                <h2 class="text-2xl font-700 mb-6">Exclusive Offers</h2>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="glass-card p-8 glow-purple relative overflow-hidden">
-                        <div class="orb" style="width:200px;height:200px;background:#6366f1;top:-50px;right:-50px;opacity:0.2"></div>
+                <h2 class="text-xl sm:text-2xl font-700 mb-4 sm:mb-6">Exclusive Offers</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="glass-card p-4 sm:p-8 glow-purple relative overflow-hidden">
+                        <div class="orb hidden sm:block" style="width:200px;height:200px;background:#6366f1;top:-50px;right:-50px;opacity:0.2"></div>
                         <div class="relative">
                             <span class="text-xs uppercase tracking-wider text-purple-300 font-600">Limited Time</span>
-                            <h3 class="text-2xl font-800 mt-2 mb-2">5.25% Savings Rate</h3>
-                            <p class="text-white/50 text-sm mb-4">Lock in our highest-ever rate on term deposits. Minimum $5,000 for 12 months.</p>
-                            <button class="btn-primary text-sm"><i class="fas fa-arrow-right mr-2"></i>Apply Now</button>
+                            <h3 class="text-xl sm:text-2xl font-800 mt-2 mb-2">5.25% Savings Rate</h3>
+                            <p class="text-white/50 text-xs sm:text-sm mb-3 sm:mb-4">Lock in our highest-ever rate on term deposits. Minimum $5,000 for 12 months.</p>
+                            <button class="btn-primary text-xs sm:text-sm"><i class="fas fa-arrow-right mr-2"></i>Apply Now</button>
                         </div>
                     </div>
-                    <div class="glass-card p-8 glow-blue relative overflow-hidden">
-                        <div class="orb" style="width:200px;height:200px;background:#06b6d4;top:-50px;right:-50px;opacity:0.2"></div>
+                    <div class="glass-card p-4 sm:p-8 glow-blue relative overflow-hidden">
+                        <div class="orb hidden sm:block" style="width:200px;height:200px;background:#06b6d4;top:-50px;right:-50px;opacity:0.2"></div>
                         <div class="relative">
                             <span class="text-xs uppercase tracking-wider text-cyan-300 font-600">New Offer</span>
-                            <h3 class="text-2xl font-800 mt-2 mb-2">0% Balance Transfer</h3>
-                            <p class="text-white/50 text-sm mb-4">Transfer existing credit card balances at 0% p.a. for 18 months. No annual fee first year.</p>
-                            <button class="btn-primary text-sm"><i class="fas fa-arrow-right mr-2"></i>Learn More</button>
+                            <h3 class="text-xl sm:text-2xl font-800 mt-2 mb-2">0% Balance Transfer</h3>
+                            <p class="text-white/50 text-xs sm:text-sm mb-3 sm:mb-4">Transfer existing credit card balances at 0% p.a. for 18 months. No annual fee first year.</p>
+                            <button class="btn-primary text-xs sm:text-sm"><i class="fas fa-arrow-right mr-2"></i>Learn More</button>
                         </div>
                     </div>
-                    <div class="glass-card p-8 relative overflow-hidden">
-                        <div class="orb" style="width:200px;height:200px;background:#10b981;top:-50px;right:-50px;opacity:0.2"></div>
+                    <div class="glass-card p-4 sm:p-8 relative overflow-hidden">
+                        <div class="orb hidden sm:block" style="width:200px;height:200px;background:#10b981;top:-50px;right:-50px;opacity:0.2"></div>
                         <div class="relative">
                             <span class="text-xs uppercase tracking-wider text-green-300 font-600">Cashback</span>
-                            <h3 class="text-2xl font-800 mt-2 mb-2">3% Cashback Card</h3>
-                            <p class="text-white/50 text-sm mb-4">Earn 3% cashback on groceries, dining, and fuel. No cap on rewards for the first 6 months.</p>
-                            <button class="btn-primary text-sm"><i class="fas fa-arrow-right mr-2"></i>Get Card</button>
+                            <h3 class="text-xl sm:text-2xl font-800 mt-2 mb-2">3% Cashback Card</h3>
+                            <p class="text-white/50 text-xs sm:text-sm mb-3 sm:mb-4">Earn 3% cashback on groceries, dining, and fuel. No cap on rewards for the first 6 months.</p>
+                            <button class="btn-primary text-xs sm:text-sm"><i class="fas fa-arrow-right mr-2"></i>Get Card</button>
                         </div>
                     </div>
-                    <div class="glass-card p-8 relative overflow-hidden">
-                        <div class="orb" style="width:200px;height:200px;background:#f59e0b;top:-50px;right:-50px;opacity:0.2"></div>
+                    <div class="glass-card p-4 sm:p-8 relative overflow-hidden">
+                        <div class="orb hidden sm:block" style="width:200px;height:200px;background:#f59e0b;top:-50px;right:-50px;opacity:0.2"></div>
                         <div class="relative">
                             <span class="text-xs uppercase tracking-wider text-amber-300 font-600">Home Loan</span>
-                            <h3 class="text-2xl font-800 mt-2 mb-2">6.19% Home Rate</h3>
-                            <p class="text-white/50 text-sm mb-4">Our lowest variable rate with offset. Free property valuation and no application fees.</p>
-                            <button class="btn-primary text-sm"><i class="fas fa-arrow-right mr-2"></i>Calculate</button>
+                            <h3 class="text-xl sm:text-2xl font-800 mt-2 mb-2">6.19% Home Rate</h3>
+                            <p class="text-white/50 text-xs sm:text-sm mb-3 sm:mb-4">Our lowest variable rate with offset. Free property valuation and no application fees.</p>
+                            <button class="btn-primary text-xs sm:text-sm"><i class="fas fa-arrow-right mr-2"></i>Calculate</button>
                         </div>
                     </div>
                 </div>
@@ -405,28 +423,28 @@
         <div class="flex flex-col h-full">
             <div class="border-b border-white/10">
                 <div class="flex items-center justify-end p-2">
-                    <button onclick="toggleChat()" class="text-white/30 hover:text-white transition"><i class="fas fa-xmark text-lg"></i></button>
+                    <button onclick="toggleChat()" class="text-white/30 hover:text-white transition p-2"><i class="fas fa-xmark text-lg"></i></button>
                 </div>
-                <div class="flex flex-col items-center pb-4">
-                    <img src="teller.webp" alt="Bank Teller" style="height:120px; border-radius:16px;" class="mb-3">
-                    <div class="font-700 text-base">NexusBot</div>
+                <div class="flex flex-col items-center pb-3 sm:pb-4">
+                    <img src="teller.webp" alt="Bank Teller" class="h-20 sm:h-28 rounded-xl mb-2 sm:mb-3">
+                    <div class="font-700 text-sm sm:text-base">NexusBot</div>
                     <div class="text-white/30 text-xs">Your banking assistant · Online</div>
                 </div>
             </div>
-            <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-3" id="chatMessages">
+            <div class="flex-1 overflow-y-auto p-3 sm:p-4 flex flex-col gap-2 sm:gap-3" id="chatMessages">
                 <div class="chat-msg bot">Hi there! 👋 I'm NexusBot, your banking assistant. How can I help you today?</div>
             </div>
-            <div class="p-4 border-t border-white/10">
+            <div class="p-3 sm:p-4 border-t border-white/10">
                 <div class="flex gap-2">
                     <input id="chatInput" type="text" class="input-field text-sm" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()">
-                    <button onclick="sendChat()" class="btn-primary px-4"><i class="fas fa-paper-plane"></i></button>
+                    <button onclick="sendChat()" class="btn-primary px-3 sm:px-4"><i class="fas fa-paper-plane"></i></button>
                 </div>
-                <div class="flex gap-2 mt-2 flex-wrap" id="quickReplies">
-                    <button onclick="sendQuick('I want to transfer to Tony King')" class="text-xs glass rounded-full px-3 py-1 hover:bg-white/10 transition cursor-pointer">Transfer to Tony King</button>
-                    <button onclick="sendQuick('Show my balance')" class="text-xs glass rounded-full px-3 py-1 hover:bg-white/10 transition cursor-pointer">Show balance</button>
-                    <button onclick="sendQuick('Show promotions')" class="text-xs glass rounded-full px-3 py-1 hover:bg-white/10 transition cursor-pointer">Promotions</button>
-                    <button onclick="sendQuick('I want to check my accounts')" class="text-xs glass rounded-full px-3 py-1 hover:bg-white/10 transition cursor-pointer">My accounts</button>
-                    <button onclick="sendQuick('Help me pay Sarah Chen $500')" class="text-xs glass rounded-full px-3 py-1 hover:bg-white/10 transition cursor-pointer">Pay Sarah $500</button>
+                <div class="flex gap-1.5 sm:gap-2 mt-2 flex-wrap" id="quickReplies">
+                    <button onclick="sendQuick('I want to transfer to Tony King')" class="text-xs glass rounded-full px-2 sm:px-3 py-1 hover:bg-white/10 transition cursor-pointer">Transfer to Tony King</button>
+                    <button onclick="sendQuick('Show my balance')" class="text-xs glass rounded-full px-2 sm:px-3 py-1 hover:bg-white/10 transition cursor-pointer">Show balance</button>
+                    <button onclick="sendQuick('Show promotions')" class="text-xs glass rounded-full px-2 sm:px-3 py-1 hover:bg-white/10 transition cursor-pointer">Promotions</button>
+                    <button onclick="sendQuick('I want to check my accounts')" class="text-xs glass rounded-full px-2 sm:px-3 py-1 hover:bg-white/10 transition cursor-pointer">My accounts</button>
+                    <button onclick="sendQuick('Help me pay Sarah Chen $500')" class="text-xs glass rounded-full px-2 sm:px-3 py-1 hover:bg-white/10 transition cursor-pointer">Pay Sarah $500</button>
                 </div>
             </div>
         </div>
@@ -434,12 +452,12 @@
 </div>
 
 <!-- Transfer Success Modal -->
-<div id="transferModal" class="fixed inset-0 z-50 hidden items-center justify-center" style="background:rgba(0,0,0,0.6);backdrop-filter:blur(8px)">
-    <div class="glass-card p-10 text-center max-w-sm animate-fadeInUp">
-        <div class="w-20 h-20 rounded-full gradient-success flex items-center justify-center mx-auto mb-4"><i class="fas fa-check text-3xl"></i></div>
-        <h3 class="text-2xl font-800 mb-2">Transfer Sent!</h3>
-        <p class="text-white/50 text-sm mb-6">Your transfer has been submitted and is being processed.</p>
-        <button onclick="closeModal()" class="btn-primary">Done</button>
+<div id="transferModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.6);backdrop-filter:blur(8px)">
+    <div class="glass-card p-6 sm:p-10 text-center max-w-sm w-full animate-fadeInUp">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full gradient-success flex items-center justify-center mx-auto mb-3 sm:mb-4"><i class="fas fa-check text-2xl sm:text-3xl"></i></div>
+        <h3 class="text-xl sm:text-2xl font-800 mb-2">Transfer Sent!</h3>
+        <p class="text-white/50 text-xs sm:text-sm mb-4 sm:mb-6">Your transfer has been submitted and is being processed.</p>
+        <button onclick="closeModal()" class="btn-primary w-full sm:w-auto">Done</button>
     </div>
 </div>
 
@@ -603,14 +621,14 @@
   function renderAccountCards() {
     const container = document.getElementById('accountCards');
     container.innerHTML = accounts.map(a => `
-    <div class="glass-card p-6 cursor-pointer hover:bg-white/5 transition" onclick="navigateTo('accountDetail')">
-      <div class="flex items-center justify-between mb-4">
-        <div class="w-12 h-12 rounded-xl ${a.gradient} flex items-center justify-center"><i class="fas ${a.icon}"></i></div>
+    <div class="glass-card p-4 sm:p-6 cursor-pointer hover:bg-white/5 transition" onclick="navigateTo('accountDetail')">
+      <div class="flex items-center justify-between mb-3 sm:mb-4">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl ${a.gradient} flex items-center justify-center"><i class="fas ${a.icon} text-sm sm:text-base"></i></div>
         <span class="text-xs text-white/30 uppercase">${a.type}</span>
       </div>
-      <div class="text-white/50 text-sm">${a.name}</div>
-      <div class="text-2xl font-800 mt-1">$${a.balance.toLocaleString('en-US', {minimumFractionDigits:2})}</div>
-      <div class="text-white/30 text-xs mt-2">${a.bsb !== '-' ? a.bsb + ' | ' : ''}${a.number}</div>
+      <div class="text-white/50 text-xs sm:text-sm">${a.name}</div>
+      <div class="text-xl sm:text-2xl font-800 mt-1">$${a.balance.toLocaleString('en-US', {minimumFractionDigits:2})}</div>
+      <div class="text-white/30 text-xs mt-2 truncate">${a.bsb !== '-' ? a.bsb + ' | ' : ''}${a.number}</div>
     </div>
   `).join('');
   }
@@ -618,12 +636,12 @@
   function renderTransactions() {
     const container = document.getElementById('recentTransactions');
     container.innerHTML = transactions.slice(0,5).map(t => `
-    <div class="flex items-center justify-between p-3 transaction-row rounded-xl">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl glass flex items-center justify-center"><i class="fas ${t.icon} text-sm text-white/50"></i></div>
-        <div><div class="font-500 text-sm">${t.desc}</div><div class="text-white/30 text-xs">${t.date}</div></div>
+    <div class="flex items-center justify-between p-2 sm:p-3 transaction-row rounded-xl">
+      <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl glass flex items-center justify-center flex-shrink-0"><i class="fas ${t.icon} text-xs sm:text-sm text-white/50"></i></div>
+        <div class="min-w-0 flex-1"><div class="font-500 text-xs sm:text-sm truncate">${t.desc}</div><div class="text-white/30 text-xs">${t.date}</div></div>
       </div>
-      <div class="font-600 ${t.color}">${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toFixed(2)}</div>
+      <div class="font-600 text-xs sm:text-sm ${t.color} flex-shrink-0 ml-2">${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toFixed(2)}</div>
     </div>
   `).join('');
   }
@@ -631,12 +649,12 @@
   function renderAccountTransactions() {
     const container = document.getElementById('accountTransactions');
     container.innerHTML = transactions.map(t => `
-    <div class="flex items-center justify-between p-3 transaction-row rounded-xl">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl glass flex items-center justify-center"><i class="fas ${t.icon} text-sm text-white/50"></i></div>
-        <div><div class="font-500 text-sm">${t.desc}</div><div class="text-white/30 text-xs">${t.date}</div></div>
+    <div class="flex items-center justify-between p-2 sm:p-3 transaction-row rounded-xl">
+      <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl glass flex items-center justify-center flex-shrink-0"><i class="fas ${t.icon} text-xs sm:text-sm text-white/50"></i></div>
+        <div class="min-w-0 flex-1"><div class="font-500 text-xs sm:text-sm truncate">${t.desc}</div><div class="text-white/30 text-xs">${t.date}</div></div>
       </div>
-      <div class="font-600 ${t.color}">${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toFixed(2)}</div>
+      <div class="font-600 text-xs sm:text-sm ${t.color} flex-shrink-0 ml-2">${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toFixed(2)}</div>
     </div>
   `).join('');
   }
