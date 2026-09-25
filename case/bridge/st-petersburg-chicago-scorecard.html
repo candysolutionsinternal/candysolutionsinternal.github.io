@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>St Petersburg Chicago 积分表</title>
+  <style>
+    :root {
+      --bg: #f3f6f8;
+      --card: #ffffff;
+      --line: #d8e0e6;
+      --ink: #15202b;
+      --muted: #61707c;
+      --ns: #0b6e4f;
+      --ew: #a43b2d;
+      --accent: #165d9f;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 28px; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif; }
+    main { max-width: 1500px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: 1.7rem; }
+    .intro { margin: 0 0 18px; color: var(--muted); line-height: 1.55; }
+    .controls, .legend, .table-wrap { background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 2px 10px rgba(24, 40, 56, .05); }
+    .controls { padding: 16px; display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)) auto auto; gap: 14px; align-items: end; margin-bottom: 14px; }
+    label { display: block; font-size: .86rem; font-weight: 700; color: #384957; }
+    input, select, button { width: 100%; margin-top: 6px; min-height: 38px; border: 1px solid #b9c7d1; border-radius: 7px; background: #fff; color: var(--ink); font: inherit; padding: 6px 8px; }
+    input:focus, select:focus { outline: 3px solid rgba(22, 93, 159, .18); border-color: var(--accent); }
+    button { cursor: pointer; font-weight: 700; background: #eef5fb; color: #104c82; white-space: nowrap; }
+    button:hover { background: #dcecf8; }
+    .secondary { color: #7c3025; background: #fff0ed; }
+    .secondary:hover { background: #ffe0da; }
+    .legend { padding: 12px 16px; margin-bottom: 14px; font-size: .9rem; line-height: 1.55; color: #3d4e5b; }
+    .legend strong { color: var(--ink); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 1240px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 8px; text-align: center; vertical-align: middle; }
+    thead th { background: #eaf1f6; font-size: .88rem; white-space: nowrap; }
+    tbody tr:hover { background: #f7fbfd; }
+    td.board, td.vul { font-weight: 700; }
+    td.vul { font-size: .88rem; }
+    .ns { color: var(--ns); }
+    .ew { color: var(--ew); }
+    .number { font-variant-numeric: tabular-nums; font-weight: 700; }
+    .invalid { background: #fff3ef !important; color: #a42d1c; }
+    .summary-label { text-align: right; font-weight: 800; background: #edf3f7; }
+    tfoot td { background: #f4f8fa; border-bottom: 0; }
+    .hint { font-size: .78rem; color: var(--muted); font-weight: 400; display: block; margin-top: 3px; }
+    .footer-note { margin: 14px 2px 0; color: var(--muted); font-size: .86rem; line-height: 1.5; }
+    @media (max-width: 850px) { body { padding: 14px; } .controls { grid-template-columns: 1fr 1fr; } .controls button { grid-column: span 1; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>St Petersburg Chicago 积分表</h1>
+  <p class="intro">每副先按 duplicate 计桥分；HCP 较多的一方按其 HCP 与自身局况查目标分（期望值）；最后将「实际分 − 期望值」转换为 IMP。统一以 NS 视角显示：正数表示 NS 赢，负数表示 EW 赢。</p>
+
+  <section class="controls" aria-label="全局设置">
+    <label>NS HCP（每副默认值）
+      <input id="defaultHcp" type="number" min="0" max="40" value="20" inputmode="numeric" />
+    </label>
+    <label>局况循环
+      <select id="cycleMode">
+        <option value="duplicate16" selected>标准 Duplicate 16 副循环</option>
+        <option value="custom8">自定义 8 副：双无、NS、EW、双有、NS、EW、双有、双无</option>
+      </select>
+    </label>
+    <label>高点 target 表
+      <select id="targetMode">
+        <option value="slam" selected>含满贯预期（31+ HCP）</option>
+        <option value="simple">简化表（31+ HCP）</option>
+      </select>
+    </label>
+    <button id="applyHcp" type="button">将默认 HCP 填入全部 16 副</button>
+    <button id="clearAll" class="secondary" type="button">清空输入</button>
+  </section>
+
+  <section class="legend">
+    <strong>输入方法：</strong>输入 NS 的 HCP（EW 自动为 \(40-HCP\)）；选择庄家方、定约阶数和花色；“结果”填相对于定约的墩数，例如 = 填 0、+1 填 1、宕一填 −1。<br />
+    <strong>HCP delta：</strong>NS HCP − 20；正数表示 NS 为强牌方，负数表示 EW 为强牌方。<strong>期望值</strong>显示强牌方的 target，并从 NS 视角带符号。无合约时该行不计分。
+  </section>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>局数</th>
+          <th>局况</th>
+          <th>庄家方</th>
+          <th>数字<br><span class="hint">1–7</span></th>
+          <th>花色</th>
+          <th>结果<br><span class="hint">=0；+1；−1</span></th>
+          <th>NS HCP<br><span class="hint">EW = 40 − NS</span></th>
+          <th>基本分<br><span class="hint">NS 视角</span></th>
+          <th>HCP delta<br><span class="hint">NS − 20</span></th>
+          <th>期望值<br><span class="hint">NS 视角</span></th>
+          <th>分数 − 期望值</th>
+          <th>IMP<br><span class="hint">NS 视角</span></th>
+        </tr>
+      </thead>
+      <tbody id="scoreBody"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="6" class="summary-label">汇总（已完成合约的牌）</td>
+          <td id="sumHcp" class="number">—</td>
+          <td id="sumRaw" class="number">0</td>
+          <td id="sumDelta" class="number">0</td>
+          <td id="sumTarget" class="number">0</td>
+          <td id="sumDifference" class="number">0</td>
+          <td id="sumImp" class="number">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <p class="footer-note">本版本的 1–16 副局况为：双无、NS 有局、EW 有局、双有、NS 有局、EW 有局、双有、双无、EW 有局、双有、双无、NS 有局、双有、双无、NS 有局、EW 有局。不同牌友圈可能使用不同 target 表；开始前请以同桌约定为准。</p>
+</main>
+
+<script>
+  const targets = {
+    slam: {
+      nv: {20:0,21:50,22:70,23:110,24:200,25:300,26:350,27:400,28:430,29:460,30:490,31:600,32:700,33:900,34:1000,35:1100,36:1200,37:1300,38:1300,39:1300,40:1300},
+      v:  {20:0,21:50,22:70,23:110,24:290,25:440,26:520,27:600,28:630,29:660,30:690,31:900,32:1050,33:1350,34:1500,35:1650,36:1800,37:1950,38:1950,39:1950,40:1950}
+    },
+    simple: {
+      nv: {20:0,21:50,22:70,23:110,24:200,25:300,26:350,27:400,28:430,29:460,30:490,31:500,32:500,33:500,34:500,35:500,36:500,37:500,38:500,39:500,40:500},
+      v:  {20:0,21:50,22:70,23:110,24:290,25:440,26:520,27:600,28:630,29:660,30:690,31:700,32:700,33:700,34:700,35:700,36:700,37:700,38:700,39:700,40:700}
+    }
+  };
+
+  const impTable = [[10,0],[40,1],[80,2],[120,3],[160,4],[210,5],[260,6],[310,7],[360,8],[420,9],[490,10],[590,11],[740,12],[890,13],[1090,14],[1290,15],[1490,16],[1740,17],[1990,18],[2240,19],[2490,20],[2990,21],[3490,22],[3990,23],[Infinity,24]];
+
+  // 已按用户指定修正：第 13–16 副为 双有、双无、NS 有局、EW 有局。
+  const duplicate16 = ["双无", "NS 有局", "EW 有局", "双有", "NS 有局", "EW 有局", "双有", "双无", "EW 有局", "双有", "双无", "NS 有局", "双有", "双无", "NS 有局", "EW 有局"];
+  const custom8 = ["双无", "NS 有局", "EW 有局", "双有", "NS 有局", "EW 有局", "双有", "双无"];
+  const body = document.getElementById('scoreBody');
+
+  function fmt(value) { if (value === null || value === undefined || Number.isNaN(value)) return '—'; return `${value > 0 ? '+' : ''}${value}`; }
+  function vulnerabilityFor(board) { const cycle = document.getElementById('cycleMode').value === 'duplicate16' ? duplicate16 : custom8; return cycle[(board - 1) % cycle.length]; }
+  function sideVulnerable(side, vul) { return vul === '双有' || (side === 'NS' && vul === 'NS 有局') || (side === 'EW' && vul === 'EW 有局'); }
+  function impFromDifference(diff) { const sign = Math.sign(diff); const abs = Math.abs(diff); return sign * impTable.find(([limit]) => abs <= limit)[1]; }
+
+  function rawScore(level, strain, result, declarer, vulnerable) {
+    const tricksBid = Number(level) + 6;
+    const tricksTaken = tricksBid + Number(result);
+    const made = tricksTaken >= tricksBid;
+    const isVul = sideVulnerable(declarer, vulnerable);
+    let score;
+    if (!made) {
+      score = -(tricksBid - tricksTaken) * (isVul ? 100 : 50);
+    } else {
+      const contractTricks = Number(level);
+      let trickPoints;
+      if (strain === 'C' || strain === 'D') trickPoints = contractTricks * 20;
+      else if (strain === 'H' || strain === 'S') trickPoints = contractTricks * 30;
+      else trickPoints = 40 + (contractTricks - 1) * 30;
+      const bonus = trickPoints >= 100 ? (isVul ? 500 : 300) : 50;
+      const overtricks = Math.max(0, Number(result));
+      const overtrickValue = (strain === 'C' || strain === 'D') ? 20 : 30;
+      score = trickPoints + bonus + overtricks * overtrickValue;
+      if (Number(level) === 6) score += isVul ? 750 : 500;
+      if (Number(level) === 7) score += isVul ? 1500 : 1000;
+    }
+    return declarer === 'NS' ? score : -score;
+  }
+
+  function makeRow(board) {
+    const row = document.createElement('tr');
+    row.dataset.board = board;
+    row.innerHTML = `
+      <td class="board">${board}</td><td class="vul"></td>
+      <td><select class="declarer"><option value="">—</option><option value="NS">NS</option><option value="EW">EW</option></select></td>
+      <td><input class="level" type="number" min="1" max="7" step="1" inputmode="numeric" /></td>
+      <td><select class="strain"><option value="">—</option><option value="C">♣</option><option value="D">♦</option><option value="H">♥</option><option value="S">♠</option><option value="NT">NT</option></select></td>
+      <td><input class="result" type="number" min="-13" max="7" step="1" value="0" inputmode="numeric" /></td>
+      <td><input class="hcp" type="number" min="0" max="40" step="1" value="20" inputmode="numeric" /></td>
+      <td class="raw number">—</td><td class="delta number">—</td><td class="target number">—</td><td class="difference number">—</td><td class="imp number">—</td>`;
+    body.appendChild(row);
+  }
+  for (let board = 1; board <= 16; board++) makeRow(board);
+
+  function updateRow(row) {
+    const board = Number(row.dataset.board);
+    const vul = vulnerabilityFor(board);
+    row.querySelector('.vul').textContent = vul;
+    const declarer = row.querySelector('.declarer').value;
+    const level = row.querySelector('.level').value;
+    const strain = row.querySelector('.strain').value;
+    const resultInput = row.querySelector('.result');
+    const hcpInput = row.querySelector('.hcp');
+    const hcp = Number(hcpInput.value);
+    const result = Number(resultInput.value || 0);
+    const cells = { raw: row.querySelector('.raw'), delta: row.querySelector('.delta'), target: row.querySelector('.target'), difference: row.querySelector('.difference'), imp: row.querySelector('.imp') };
+    row.querySelectorAll('td').forEach(td => td.classList.remove('invalid'));
+    if (!Number.isInteger(hcp) || hcp < 0 || hcp > 40) { hcpInput.classList.add('invalid'); Object.values(cells).forEach(c => c.textContent = '—'); return null; }
+    const delta = hcp - 20;
+    cells.delta.textContent = fmt(delta);
+    cells.delta.className = `delta number ${delta > 0 ? 'ns' : delta < 0 ? 'ew' : ''}`;
+    if (!declarer || !level || !strain) { cells.raw.textContent = '—'; cells.target.textContent = '—'; cells.difference.textContent = '—'; cells.imp.textContent = '—'; return null; }
+    if (Number(level) < 1 || Number(level) > 7 || result < -13 || result > 7) { row.querySelector('.level').classList.add('invalid'); resultInput.classList.add('invalid'); Object.values(cells).forEach(c => c.textContent = '—'); return null; }
+    const strongSide = hcp >= 20 ? 'NS' : 'EW';
+    const strongHcp = Math.max(hcp, 40 - hcp);
+    const targetMagnitude = targets[document.getElementById('targetMode').value][sideVulnerable(strongSide, vul) ? 'v' : 'nv'][strongHcp];
+    const signedTarget = strongSide === 'NS' ? targetMagnitude : -targetMagnitude;
+    const raw = rawScore(level, strain, result, declarer, vul);
+    const difference = raw - signedTarget;
+    const imp = impFromDifference(difference);
+    cells.raw.textContent = fmt(raw); cells.target.textContent = fmt(signedTarget); cells.difference.textContent = fmt(difference); cells.imp.textContent = fmt(imp);
+    [cells.raw, cells.target, cells.difference, cells.imp].forEach(c => { const n = Number(c.textContent.replace('+', '')); c.className = `${c.className.split(' ')[0]} number ${n > 0 ? 'ns' : n < 0 ? 'ew' : ''}`; });
+    return { hcp, raw, delta, target: signedTarget, difference, imp };
+  }
+
+  function updateAll() {
+    let count = 0, totalHcp = 0, totalRaw = 0, totalDelta = 0, totalTarget = 0, totalDifference = 0, totalImp = 0;
+    [...body.querySelectorAll('tr')].forEach(row => {
+      const data = updateRow(row);
+      if (data) { count++; totalHcp += data.hcp; totalRaw += data.raw; totalDelta += data.delta; totalTarget += data.target; totalDifference += data.difference; totalImp += data.imp; }
+    });
+    document.getElementById('sumHcp').textContent = count ? `${totalHcp} / ${count} 副` : '—';
+    document.getElementById('sumRaw').textContent = fmt(totalRaw);
+    document.getElementById('sumDelta').textContent = fmt(totalDelta);
+    document.getElementById('sumTarget').textContent = fmt(totalTarget);
+    document.getElementById('sumDifference').textContent = fmt(totalDifference);
+    document.getElementById('sumImp').textContent = fmt(totalImp);
+    document.getElementById('sumImp').className = `number ${totalImp > 0 ? 'ns' : totalImp < 0 ? 'ew' : ''}`;
+  }
+
+  body.addEventListener('input', updateAll);
+  body.addEventListener('change', updateAll);
+  document.getElementById('cycleMode').addEventListener('change', updateAll);
+  document.getElementById('targetMode').addEventListener('change', updateAll);
+  document.getElementById('applyHcp').addEventListener('click', () => { const value = document.getElementById('defaultHcp').value; body.querySelectorAll('.hcp').forEach(input => input.value = value); updateAll(); });
+  document.getElementById('clearAll').addEventListener('click', () => { body.querySelectorAll('tr').forEach(row => { row.querySelector('.declarer').value = ''; row.querySelector('.level').value = ''; row.querySelector('.strain').value = ''; row.querySelector('.result').value = '0'; row.querySelector('.hcp').value = '20'; }); updateAll(); });
+  updateAll();
+</script>
+</body>
+</html>
